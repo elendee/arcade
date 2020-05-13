@@ -8,7 +8,7 @@ export default {
 
 	// cam_flip: false,
 	
-	handler: 'world',
+	handler: 'arcade',
 	
 	mousedown: {
 		left: false,

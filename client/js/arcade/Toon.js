@@ -85,8 +85,8 @@ export default class Toon {
 
 		this.INVENTORY = {}
 
-		for( const mud_id of Object.keys( this._INVENTORY ) ){
-			this.INVENTORY[ mud_id ] = new Item( this._INVENTORY[ mud_id ])
+		for( const arc_id of Object.keys( this._INVENTORY ) ){
+			this.INVENTORY[ arc_id ] = new Item( this._INVENTORY[ arc_id ])
 		}
 
 	}
@@ -112,7 +112,7 @@ export default class Toon {
 
 		this.MODEL.userData = {
 			clickable: true,
-			mud_id: this.mud_id,
+			arc_id: this.arc_id,
 			type: type,
 			website: this.website,
 			name: this.name

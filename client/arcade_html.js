@@ -1,25 +1,23 @@
 const header_info = `
-	<title>MUD</title>
+	<title>ARCADE</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
-	<meta name="Description" content="a mud">
-	<meta property="og:url" content="https://mud.oko.nyc">
-	<meta property="og:title" content="okomud">
-	<meta property="og:description" content="javascript MUD"> 
-	<meta property="og:image" content="https://mud.oko.nyc/resource/media/featured-image.png"/>`
+	<meta name="Description" content="an arcade">
+	<meta property="og:url" content="https://arcade.oko.nyc">
+	<meta property="og:title" content="arcade">
+	<meta property="og:description" content="javascript arcade"> 
+	<meta property="og:image" content="https://arcade.oko.nyc/resource/media/featured-image.png"/>`
 
 const scripts = {
 	base: `<script src='/client/js/base.js'></script>`,
 	auth: `<script type='module' src='/client/js/init_auth.js'></script>`,
-	world: `<script type='module' src='/client/js/init_world.js'></script>`,
-	avatar: `<script type='module' src='/client/js/init_avatar.js'></script>`,
+	arcade: `<script type='module' src='/client/js/init_arcade.js'></script>`
 }
 
 const styles = {
 	base: `<link rel='stylesheet' href='/client/css/base.css'>`,
 	index: `<link rel='stylesheet' href='/client/css/index.css'>`,
-	avatar: `<link rel='stylesheet' href='/client/css/avatar.css'>`,
-	world: `<link rel='stylesheet' href='/client/css/world.css'>`,
+	arcade: `<link rel='stylesheet' href='/client/css/arcade.css'>`,
 	chat: `<link rel='stylesheet' href='/client/css/chat.css'>`,
 	'404': `<link rel='stylesheet' href='/client/css/404.css'>`,
 }
@@ -27,14 +25,8 @@ const styles = {
 const overlays = {
 	alert:`
 		<div id=alert-contain></div>`,
-	world_ui: `
-			<div id='world-map'></div>
-			<div id='compass'>
-				<div>
-					<div id='compass-arrow'></div>
-					<!--img src='/resource/images/compass-arrow.png'-->
-				</div>
-			</div>
+	arcade_ui: `
+			<div id='arcade-map'></div>
 			<div id='action-bar'></div>`,
 	dev: `
 		<div id='dev'>
@@ -221,7 +213,7 @@ const render = function( type, request ){
 							</form>
 						</div>
 						<div id='play-contain'>
-							<form id='play-form' method='post' action='/world'>
+							<form id='play-form' method='post' action='/arcade'>
 								<input type='hidden' name='play' value='human'>
 								<input type='hidden' name='email' value='hpot'>
 								<input type='submit' class='submit button' value='play'>
@@ -251,9 +243,9 @@ const render = function( type, request ){
 			</html>`
 			break;
 
-		case 'world':
-			css_includes += styles.world + styles.chat
-			js_includes += scripts.world
+		case 'arcade':
+			css_includes += styles.arcade + styles.chat
+			js_includes += scripts.arcade
 			return `
 			<html>
 				<head>
@@ -264,7 +256,7 @@ const render = function( type, request ){
 				<body>
 					${ overlays.dev }
 					${ overlays.alert }
-					${ overlays.world_ui }
+					${ overlays.arcade_ui }
 					${ overlays.chat }
 					${ overlays.target }
 					${ overlays.shaders }

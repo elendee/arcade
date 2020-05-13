@@ -13,35 +13,35 @@ module.exports = function emit( type, data ){
 	switch( type ){
 
 		case 'floorplan_pong':
-			SOCKETS[ data.mud_id ].send(JSON.stringify({
+			SOCKETS[ data.arc_id ].send(JSON.stringify({
 				type: type,
 				floorplan: FLOORPLAN
 			}))
 			break;
 
 		case 'forest_pong':
-			SOCKETS[ data.mud_id ].send(JSON.stringify({
+			SOCKETS[ data.arc_id ].send(JSON.stringify({
 				type: type,
 				forest: TREES
 			}))
 			break;
 
 		case 'bot_pong':
-			if( BOTS[ data.bot_mud_id ] ){
-				SOCKETS[ data.mud_id ].send(JSON.stringify({
+			if( BOTS[ data.bot_arc_id ] ){
+				SOCKETS[ data.arc_id ].send(JSON.stringify({
 					type: type,
-					bot: BOTS[ data.bot_mud_id ],
-					// position: BOTS[ data.bot_mud_id ].ref.position,
-					// quaternion: BOTS[ data.bot_mud_id ].ref.quaternion
+					bot: BOTS[ data.bot_arc_id ],
+					// position: BOTS[ data.bot_arc_id ].ref.position,
+					// quaternion: BOTS[ data.bot_arc_id ].ref.quaternion
 				}))
 			}else{
-				log('flag', 'missing requested bot: ', data.bot_mud_id, Object.keys( BOTS ) )
+				log('flag', 'missing requested bot: ', data.bot_arc_id, Object.keys( BOTS ) )
 			}
 			break;
 
 		case 'move_pulse':
-			for( const mud_id of Object.keys( SOCKETS ) ){
-				SOCKETS[ mud_id ].send(JSON.stringify({
+			for( const arc_id of Object.keys( SOCKETS ) ){
+				SOCKETS[ arc_id ].send(JSON.stringify({
 					type: type,
 					bundle: data
 				}))
@@ -50,8 +50,8 @@ module.exports = function emit( type, data ){
 			break;
 
 		case 'census':
-			for( const mud_id of Object.keys( SOCKETS ) ){
-				SOCKETS[ mud_id ].send(JSON.stringify({
+			for( const arc_id of Object.keys( SOCKETS ) ){
+				SOCKETS[ arc_id ].send(JSON.stringify({
 					type: type,
 					crowd: data
 				}))
@@ -59,8 +59,8 @@ module.exports = function emit( type, data ){
 			break;
 
 		case 'pillars':
-			for( const mud_id of Object.keys( SOCKETS ) ){
-				SOCKETS[ mud_id ].send(JSON.stringify({
+			for( const arc_id of Object.keys( SOCKETS ) ){
+				SOCKETS[ arc_id ].send(JSON.stringify({
 					type: type,
 					pillars: PILLARS
 				}))
@@ -69,8 +69,8 @@ module.exports = function emit( type, data ){
 
 		case 'bot_pulse':
 			log('flag', 'bot_pulse  should be deprecated...')
-			// for( const mud_id of Object.keys( SOCKETS ) ){
-			// 	SOCKETS[ mud_id ].send(JSON.stringify({
+			// for( const arc_id of Object.keys( SOCKETS ) ){
+			// 	SOCKETS[ arc_id ].send(JSON.stringify({
 			// 		type: type,
 			// 		packet: data
 			// 	}))

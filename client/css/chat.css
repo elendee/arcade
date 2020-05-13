@@ -11,7 +11,7 @@
 #chat-content{
 	height: 140px;
 	padding: 5px;
-	background: rgba(100, 0, 00, .5);
+	background: rgba(0, 0, 00, .5);
 	overflow-y: auto;
 	padding-bottom: 15px;
 }
@@ -32,11 +32,11 @@
 
 #chat-input{
 	width: 100%;
-	background: rgb(80, 0, 40);
+	background: rgb(10, 0, 80);
 	border: 0px;
 	border-bottom: 1px solid grey;
 	line-height: 18px;
-	border: 2px solid rgb(80, 0, 40);
+	border: 2px solid rgb(10, 0, 80);
 	color: white;
 	padding: 0 5px;
 }

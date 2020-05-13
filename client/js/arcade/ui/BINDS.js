@@ -16,7 +16,7 @@ const binds = {
 
 	},
 
-	world: {
+	arcade: {
 
 		move: {
 			forward: 83, // w

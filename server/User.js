@@ -26,13 +26,13 @@ module.exports = class User extends Persistent {
 
 		this.email = init.email 
 
+		this.handle = init.handle
+
+		this.speed = init.speed || 20
+
 		this.ref = {
 			position: new Vector3(),
 		}
-
-		this.active_avatar = init.active_avatar
-
-		this._TOON = init._TOON || init.TOON
 
 	}
 	
@@ -74,8 +74,8 @@ module.exports = class User extends Persistent {
 				}
 
 				// seems this always need be http session
-				// if( SOCKETS[ patron.mud_id ] ){
-				// 	SOCKETS[ patron.mud_id ].request.session.save( function( err ){
+				// if( SOCKETS[ patron.arc_id ] ){
+				// 	SOCKETS[ patron.arc_id ].request.session.save( function( err ){
 				// 		if( err ){
 				// 			log('err saving register attempt: ', err )
 				// 			reject()
@@ -83,7 +83,7 @@ module.exports = class User extends Persistent {
 				// 		resolve( result.ops[0] )
 				// 	})
 				// }else{ 
-				// 	log('flag', 'tried to save nonexistent socket: ', mud_id )
+				// 	log('flag', 'tried to save nonexistent socket: ', arc_id )
 				// 	reject(0)
 				// }
 

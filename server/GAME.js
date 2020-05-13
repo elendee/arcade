@@ -26,7 +26,7 @@ class Game {
 
 		this.pulse = false
 
-		this.ZONES = init.ZONES || {}
+		this._USERS = init._USERS || {}
 
 	}
 
@@ -46,27 +46,10 @@ class Game {
 
 		game.pulse = setInterval(function(){
 
-			let online = false
-
-			for( const mud_id of Object.keys( game.ZONES ) ){
-
-				log('pulses', Object.keys( game.ZONES ).length  + ' zones online')
-
-				online = true
-
-				if( !Object.keys( game.ZONES[ mud_id ]._TOONS ).length ){
-					game.ZONES[ mud_id ].close()
-					delete game.ZONES[ mud_id ]
-				}
-
-			}
-
-			if( !online ){
-
+			if( !Object.keys( game._USERS ).length ){
 				clearInterval( game.pulse )
 				game.pulse = false
 				log('flag', 'no zones; game going offline')
-
 			}
 
 		}, GLOBAL.PULSES.GAME )
@@ -81,146 +64,151 @@ class Game {
 
 		const pool = DB.getPool()
 
-		let USER, TOON, x, z 
+		let USER, x, z 
 
 		socket.request.session.USER = USER = new User( socket.request.session.USER )
 
-		SOCKETS[ USER.mud_id ] = socket
+		SOCKETS[ USER.arc_id ] = socket
 
-		if( USER._id ){ // auth'd users
-			if( typeof( USER.active_avatar ) === 'number' ){
-				const toon = await this.get_toon( socket.request.session.USER.active_avatar )
-				if( toon ){
-					USER.TOON = TOON = new Toon( toon )
-				}
-			}else{
-				USER.TOON = TOON = false
-			}
-		}else{ // non-auth'd users
-			USER.TOON = TOON = new Toon()
-		}
+		this._USERS[ USER.arc_id ] = USER
 
-		TOON.mud_id = USER.mud_id // v. important, overwrite mud_id so they share
+		SOCKETS[ USER.arc_id ].send( JSON.stringify( {
+			type: 'session_init',
+			USER: SOCKETS[ USER.arc_id ].request.session.USER.publish(),
+			ARCADE: this.game_publish(),
+			map: MAP,
+		}) )
 
-		await TOON.fill_inventory()
-
-		socket.request.session.save(function(){ }) // for the non-auth'd users, so they get same avatar
-
-		if( TOON.camped_key ){
-
-			const sql = 'SELECT * FROM `structures` WHERE id=? LIMIT 1'
-
-			const values = [ TOON.camped_key ]
-
-			const { error, results, fields } = await pool.queryPromise( sql, values )
-
-			if( error ){
-				log('flag', 'err toon init: ', error )
-				return false
-			}
-
-			if( !results || !results.length || !results[0].zone_key ){
-				log('flag', 'initializing uncamped toon')
-				x = z = 0
-			}else{
-				x = lib.tile_from_Xpos( results[0].x )
-				z = lib.tile_from_Zpos( results[0].z )
-			}
-
-		}else{ // placing an uncamped toon:
-
-			TOON.ref.position.x = GLOBAL.TOON_START_POS + ( ( 2 * Math.floor( Math.random() * GLOBAL.START_RADIUS ) ) - GLOBAL.START_RADIUS )
-			TOON.ref.position.z = GLOBAL.TOON_START_POS + ( ( 2 * Math.floor( Math.random() * GLOBAL.START_RADIUS ) ) - GLOBAL.START_RADIUS )
-
-			// probably will be Zone 0, 0 forever, but just in case:
-			x = lib.tile_from_Xpos( TOON.ref.position.x ) + 11
-			z = lib.tile_from_Zpos( TOON.ref.position.z )
-
-		}
-
-		const layer = TOON._layer
-
-		const zone = await this.touch_zone( x, z, layer )
-
-		if( zone ){
-
-			ROUTER.bind_user( this, USER.mud_id )
-
-			zone._TOONS[ USER.mud_id ] = TOON
-
-			const user = SOCKETS[ USER.mud_id ].request.session.USER.publish()
-			// user._TOON = 
-
-			SOCKETS[ USER.mud_id ].send( JSON.stringify( {
-				type: 'session_init',
-				USER: user,
-				TOON: TOON.publish('_INVENTORY'),
-				ZONE: zone.publish( '_FLORA', '_NPCS' ),
-				map: MAP,
-			}) )
-
-		}else{
-
-			SOCKETS[ USER.mud_id ].send( JSON.stringify( {
-				type: 'error',
-				msg: 'error initializing zone<br><a href="/">back to landing page</a>',
-			}) )
-
-		}
+		return true
 
 	}
 
+		// if( USER._id ){ // auth'd users
+				
+		// }else{ // non-auth'd users
+		// }
+
+		// TOON.arc_id = USER.arc_id // v. important, overwrite arc_id so they share
+
+		// await TOON.fill_inventory()
+
+		// socket.request.session.save(function(){ }) // for the non-auth'd users, so they get same avatar
+
+		// if( TOON.camped_key ){
+
+		// 	const sql = 'SELECT * FROM `structures` WHERE id=? LIMIT 1'
+
+		// 	const values = [ TOON.camped_key ]
+
+		// 	const { error, results, fields } = await pool.queryPromise( sql, values )
+
+		// 	if( error ){
+		// 		log('flag', 'err toon init: ', error )
+		// 		return false
+		// 	}
+
+		// 	if( !results || !results.length || !results[0].zone_key ){
+		// 		log('flag', 'initializing uncamped toon')
+		// 		x = z = 0
+		// 	}else{
+		// 		x = lib.tile_from_Xpos( results[0].x )
+		// 		z = lib.tile_from_Zpos( results[0].z )
+		// 	}
+
+		// }else{ // placing an uncamped toon:
+
+		// 	TOON.ref.position.x = GLOBAL.TOON_START_POS + ( ( 2 * Math.floor( Math.random() * GLOBAL.START_RADIUS ) ) - GLOBAL.START_RADIUS )
+		// 	TOON.ref.position.z = GLOBAL.TOON_START_POS + ( ( 2 * Math.floor( Math.random() * GLOBAL.START_RADIUS ) ) - GLOBAL.START_RADIUS )
+
+		// 	// probably will be Zone 0, 0 forever, but just in case:
+		// 	x = lib.tile_from_Xpos( TOON.ref.position.x ) + 11
+		// 	z = lib.tile_from_Zpos( TOON.ref.position.z )
+
+		// }
+
+		// const layer = TOON._layer
+
+		// const zone = await this.touch_zone( x, z, layer )
+
+		// if( zone ){
+
+		// 	ROUTER.bind_user( this, USER.arc_id )
+
+		// 	zone._TOONS[ USER.arc_id ] = TOON
+
+		// 	const user = SOCKETS[ USER.arc_id ].request.session.USER.publish()
+		// 	// user._TOON = 
+
+		// SOCKETS[ USER.arc_id ].send( JSON.stringify( {
+		// 	type: 'session_init',
+		// 	USER: user,
+		// 	TOON: TOON.publish('_INVENTORY'),
+		// 	ZONE: zone.publish( '_FLORA', '_NPCS' ),
+		// 	map: MAP,
+		// }) )
+
+		// }else{
+
+		// 	SOCKETS[ USER.arc_id ].send( JSON.stringify( {
+		// 		type: 'error',
+		// 		msg: 'error initializing zone<br><a href="/">back to landing page</a>',
+		// 	}) )
+
+		// }
+
+	// }
 
 
 
 
 
 
-	async touch_zone( x, z, layer ){
 
-		if( typeof( x ) !== 'number' || typeof( z ) !== 'number' || typeof( layer ) !== 'number' ) return false
+	// async touch_zone( x, z, layer ){
 
-		let string_id = lib.zone_id( x, z, layer )
+	// 	if( typeof( x ) !== 'number' || typeof( z ) !== 'number' || typeof( layer ) !== 'number' ) return false
 
-		if( this.ZONES[ string_id ] )  return this.ZONES[ string_id ]
+	// 	let string_id = lib.zone_id( x, z, layer )
+
+	// 	if( this.ZONES[ string_id ] )  return this.ZONES[ string_id ]
 		
-		const pool = DB.getPool()
+	// 	const pool = DB.getPool()
 
-		const sql = 'SELECT * FROM `zones` WHERE x=? AND z=? AND layer=? LIMIT 1'
+	// 	const sql = 'SELECT * FROM `zones` WHERE x=? AND z=? AND layer=? LIMIT 1'
 
-		const { error, results, fields } = await pool.queryPromise( sql, [x, z, layer])
+	// 	const { error, results, fields } = await pool.queryPromise( sql, [x, z, layer])
 
-		let zone 
+	// 	let zone 
 
-		if( results && results[0] ){ // read
+	// 	if( results && results[0] ){ // read
 
-			zone = new Zone( results[0] )
+	// 		zone = new Zone( results[0] )
 
-			log('flag', 'db lg: ', zone._last_growth )
+	// 		log('flag', 'db lg: ', zone._last_growth )
 
-			await zone.bring_online()
+	// 		await zone.bring_online()
 
-		}else{ // create
+	// 	}else{ // create
 
-			zone = new Zone({
-				_x: x,
-				_z: z,
-				_layer: layer
-			})
+	// 		zone = new Zone({
+	// 			_x: x,
+	// 			_z: z,
+	// 			_layer: layer
+	// 		})
 
-			// log('flag', 'why invalid: ', zone._x, zone._z, zone._layer, x, z, layer )
+	// 		// log('flag', 'why invalid: ', zone._x, zone._z, zone._layer, x, z, layer )
 
-			await zone.bring_online()
+	// 		await zone.bring_online()
 
-			const res = await zone.save()
+	// 		const res = await zone.save()
 
-		}
+	// 	}
 
-		this.ZONES[ zone.get_id() ] = zone
+	// 	this.ZONES[ zone.get_id() ] = zone
 
-		return zone
+	// 	return zone
 
-	}
+	// }
 
 
 
@@ -253,31 +241,31 @@ class Game {
 
 
 
-	handle_chat( packet, mud_id ){
+	handle_chat( packet, arc_id ){
 
 		if( packet.chat.match(/^\/.*/)){
-			this.handle_command( packet, mud_id )
+			this.handle_command( packet, arc_id )
 			return true
 		}
 
 		if( packet.chat == 'xyzzy'){
-			// SOCKETS[ mud_id ].send( JSON.stringify({
+			// SOCKETS[ arc_id ].send( JSON.stringify({
 			// 	type: 'zoom'
 			// }))
 			return true
 		}
 
-		for( const socket_mud_id of Object.keys( SOCKETS )){
+		for( const socket_arc_id of Object.keys( SOCKETS )){
 			let chat_pack = {
 				type: 'chat',
 				method: packet.method,
-				sender_mud_id: mud_id,
-				speaker: SOCKETS[ mud_id ].request.session.USER.TOON.name,
+				sender_arc_id: arc_id,
+				speaker: SOCKETS[ arc_id ].request.session.USER.TOON.name,
 				chat: lib.sanitize_chat( packet.chat ),
-				color: SOCKETS[ mud_id ].request.session.USER.TOON.color
+				color: SOCKETS[ arc_id ].request.session.USER.TOON.color
 			}
 			log('chat', chat_pack.speaker, chat_pack.chat )
-			SOCKETS[ socket_mud_id ].send(JSON.stringify( chat_pack ))
+			SOCKETS[ socket_arc_id ].send(JSON.stringify( chat_pack ))
 		}
 
 	}
@@ -285,11 +273,11 @@ class Game {
 
 
 
-	handle_command( packet, mud_id ){
+	handle_command( packet, arc_id ){
 
 		if( packet.chat.match(/^\/ts$/)){
 
-			this.test_time( mud_id )
+			this.test_time( arc_id )
 			.catch(err=>{
 				log('flag', 'err test time: ', err )
 			})
@@ -303,7 +291,7 @@ class Game {
 
 
 
-	async test_time( mud_id ){
+	async test_time( arc_id ){
 
 		////////////////////////////////////////////////////////////////////////
 		log('flag', 'test_time disabled')
@@ -344,6 +332,22 @@ class Game {
 		})
 
 	}
+
+
+
+	game_publish( ...excepted ){
+
+		let users = {}
+		for( const arc_id of Object.keys( this._USERS )){
+			users[ arc_id ] = this._USERS[ arc_id ].publish()
+		}
+
+		return {
+			USERS: users
+		}
+
+	}
+
 
 
 

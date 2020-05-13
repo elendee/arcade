@@ -52,17 +52,17 @@ function init_character_buttons(){
 	})
 	inv_pop.render = function(){
 		
-		for( const mud_id of Object.keys( TOON.INVENTORY )){
+		for( const arc_id of Object.keys( TOON.INVENTORY )){
 
-			let item = TOON.INVENTORY[ mud_id ]
+			let item = TOON.INVENTORY[ arc_id ]
 
 			let row = document.createElement('div')
 			row.classList.add('stat')
 			let icon = document.createElement('img')
 			icon.classList.add('icon')
-			icon.src = '/resource/images/icons/' + TOON.INVENTORY[ mud_id ].icon_url
+			icon.src = '/resource/images/icons/' + TOON.INVENTORY[ arc_id ].icon_url
 			icon.addEventListener('click', function(){
-				console.log( mud_id )
+				console.log( arc_id )
 				MOUSE.mousehold.style.display = 'initial'
 				MOUSE.mousehold.querySelector('img').src = icon.src
 				// MOUSE.mousehold.setAttribute('data-held', )

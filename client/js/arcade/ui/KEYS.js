@@ -60,9 +60,9 @@ function handle_keydown( e ){
 				default: break;
 			}
 
-		}else if( STATE.handler == 'world' ){
+		}else if( STATE.handler == 'arcade' ){
 
-			window.TOON.needs_stream = true
+			window.USER.needs_stream = true
 
 			switch( e.keyCode ){
 
@@ -70,50 +70,50 @@ function handle_keydown( e ){
 				CHAT.input.focus()
 				break;
 
-			case BINDS.world.move.left:
+			case BINDS.arcade.move.left:
 				ANIMATE.move('left', true )
 				break
 
-			case BINDS.world.move.right:
+			case BINDS.arcade.move.right:
 				ANIMATE.move('right', true )
 				break
 
-			case BINDS.world.move.forward: 
+			case BINDS.arcade.move.forward: 
 				ANIMATE.move('forward', true )
 				break
 
-			case BINDS.world.move.back:
+			case BINDS.arcade.move.back:
 				ANIMATE.move('back', true )
 				break
 
-			case BINDS.world.move_alt.forward:
+			case BINDS.arcade.move_alt.forward:
 				ANIMATE.move('forward', true )
 				break;
 
-			case BINDS.world.move_alt.back:
+			case BINDS.arcade.move_alt.back:
 				ANIMATE.move('back', true )
 				break;
 
-			case BINDS.world.turn.left:
+			case BINDS.arcade.turn.left:
 				ANIMATE.move('left', true)
 				// ANIMATE.digital_turn('left', true )
 				break;
 
-			case BINDS.world.turn.right:
+			case BINDS.arcade.turn.right:
 				ANIMATE.move('right', true)
 				// ANIMATE.digital_turn('right', true )
 				break;
 
-			case BINDS.world.actions.one:
+			case BINDS.arcade.actions.one:
 				break;
 
-			case BINDS.world.actions.two:
+			case BINDS.arcade.actions.two:
 				break;
 
-			case BINDS.world.actions.three:
+			case BINDS.arcade.actions.three:
 				break;
 
-			case BINDS.world.actions.four:
+			case BINDS.arcade.actions.four:
 				break;
 
 			default: 
@@ -169,61 +169,61 @@ function handle_keyup( e ){
 
 		if( STATE.handler == 'chat' ){
 
-		}else if( STATE.handler == 'world' ){
+		}else if( STATE.handler == 'arcade' ){
 
 			switch(e.keyCode){
 
-			case BINDS.world.move.forward:
+			case BINDS.arcade.move.forward:
 				ANIMATE.move('forward', false)
 				break
 
-			case BINDS.world.move.back:
+			case BINDS.arcade.move.back:
 				ANIMATE.move('back', false)
 				break
 
-			case BINDS.world.move.left:
+			case BINDS.arcade.move.left:
 				ANIMATE.move('left', false)
 				break
 
-			case BINDS.world.move.right:
+			case BINDS.arcade.move.right:
 				ANIMATE.move('right', false)
 				break
 
-			case BINDS.world.move_alt.forward:
+			case BINDS.arcade.move_alt.forward:
 				ANIMATE.move('forward', false)
 				break;
 
-			case BINDS.world.move_alt.back:
+			case BINDS.arcade.move_alt.back:
 				ANIMATE.move('back', false)
 				break;
 
-			case BINDS.world.turn.left:
+			case BINDS.arcade.turn.left:
 				// ANIMATE.digital_turn('left', false)
 				ANIMATE.move('left', false)
 				break;
 
-			case BINDS.world.turn.right:
+			case BINDS.arcade.turn.right:
 				ANIMATE.move('right', false) // these should be 'move_alt', too lazy...
 				// ANIMATE.digital_turn('right', false)
 				break;
 
-			// case BINDS.world.flip_cam:
+			// case BINDS.arcade.flip_cam:
 			// 	flip_cam('return')
 			// 	break;
 
-			case BINDS.world.actions.one:
+			case BINDS.arcade.actions.one:
 				console.log('action one')
 				break;
 
-			case BINDS.world.actions.two:
+			case BINDS.arcade.actions.two:
 				console.log('action two')
 				break;
 
-			case BINDS.world.actions.three:
+			case BINDS.arcade.actions.three:
 				console.log('action three')
 				break;
 
-			case BINDS.world.actions.four:
+			case BINDS.arcade.actions.four:
 				console.log('action four')
 				break;
 
@@ -322,8 +322,8 @@ function init( zone ){
 function apply_user_bindings(){
 	
 	Object.keys( BINDS ).forEach( function( key ){
-		if( window.TOON.bindings[key] && typeof( window.TOON.bindings[key] ) == 'number' ){
-			BINDS[key] = window.TOON.bindings[key]
+		if( window.USER.bindings[key] && typeof( window.USER.bindings[key] ) == 'number' ){
+			BINDS[key] = window.USER.bindings[key]
 		}
 	})
 
@@ -336,12 +336,12 @@ function apply_user_bindings(){
 // 	if( type == 'flip' ){
 // 		if( !STATE.cam_flip ){
 // 			CAMERA.position.z = Math.abs( CAMERA.position.z ) 
-// 			CAMERA.lookAt( window.TOON.MODEL.position )
+// 			CAMERA.lookAt( window.USER.MODEL.position )
 // 			STATE.cam_flip = true
 // 		}
 // 	}else if( type == 'return' ){
 // 		CAMERA.position.z = Math.abs( CAMERA.position.z ) * -1
-// 		CAMERA.lookAt( window.TOON.MODEL.position )
+// 		CAMERA.lookAt( window.USER.MODEL.position )
 // 		STATE.cam_flip = false
 // 	}
 // }

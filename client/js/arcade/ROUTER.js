@@ -2,7 +2,7 @@ import env from '../env.js'
 
 import hal from '../hal.js'
 
-import ZONE from './ZONE.js'
+import ARCADE from './ARCADE.js'
 
 import DEV from './ui/DEV.js'
 
@@ -105,7 +105,7 @@ const bind = function(){
 				case 'login':
 					// console.error('finish switching logout to http .... ')
 					// if( obj.success ) {
-						// if( obj.patron.mud_id === window.TOON.mud_id ){
+						// if( obj.patron.arc_id === window.TOON.arc_id ){
 						// 	hal('success', 'welcome back!', 3000)
 						// }
 						ZONE.touch_patron( obj.patron )
@@ -123,7 +123,7 @@ const bind = function(){
 				case 'register':
 					// console.error('finish switching register to http .... ')
 					// if( obj.success ) {
-					if( obj.patron.mud_id === window.TOON.mud_id ){
+					if( obj.patron.arc_id === window.TOON.arc_id ){
 						hal('success', 'artist created', 4000)
 					}
 					ZONE.touch_patron( obj.patron )

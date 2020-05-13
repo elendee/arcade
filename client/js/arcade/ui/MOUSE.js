@@ -120,16 +120,16 @@ function orient_patron( x, y, e ){
 	if( e.clientY > window.innerHeight / 2 )  x *= -1
 
 	ANIMATE.analog_turn( ( x / 100 ), true )
-	// window.TOON.MODEL.rotation.y -= ( x / 100 )
+	// window.USER.MODEL.rotation.y -= ( x / 100 )
 	// adjust_camera_altitude( y )
-	// window.TOON.needs_stream = true
+	// window.USER.needs_stream = true
 
 }
 
 
 // function adjust_camera_altitude( y ){
 
-// 	toon_offset = window.TOON.height / 2
+// 	toon_offset = window.USER.height / 2
 // 	let above_ground = CAMERA.position.y > -toon_offset + 1
 
 // 	if( y < 0 ){
@@ -154,10 +154,10 @@ function orient_patron( x, y, e ){
 
 function center_camera(){
 
-	// head_pos.copy( window.TOON.MODEL.position ).add( window.TOON.HEAD.position )
+	// head_pos.copy( window.USER.MODEL.position ).add( window.USER.HEAD.position )
 
 	// CAMERA.lookAt( head_pos )
-	// CAMERA.lookAt( window.TOON.MODEL.position )
+	// CAMERA.lookAt( window.USER.MODEL.position )
 
 }
 
@@ -166,20 +166,16 @@ function wheel( e ){
 
 	if( STATE.stream_down || STATE.mousedown.left || STATE.mousedown.right || STATE.mousedown.middle )  return false
 
-	// toToon.subVectors( GLOBAL.ORIGIN, CAMERA.position ).normalize().multiplyScalar( 5.5 )
 	toToon.subVectors( GLOBAL.ORIGIN, CAMERA.offset ).normalize().multiplyScalar( 5.5 )
 
 	if( e.wheelDelta < 0 ) toToon.multiplyScalar( -1 )
 
-	// wheel_projection.copy( CAMERA.position ).add( toToon )
 	wheel_projection.copy( CAMERA.offset ).add( toToon )
 
 	if( e.wheelDelta > 0 ){
 
 		let dist = wheel_projection.distanceTo( GLOBAL.ORIGIN )
 		if( dist > GLOBAL.MIN_CAM + 5 ){
-			// console.log( dist )
-			// CAMERA.position.add( toToon )
 			CAMERA.offset.add( toToon )
 		}
 
@@ -188,10 +184,7 @@ function wheel( e ){
 		let dist1 = wheel_projection.distanceTo( GLOBAL.ORIGIN )
 		let dist2 = GLOBAL.MAX_CAM
 
-		// console.log( dist1, dist2 )
-
-		if( dist1 < dist2 && wheel_projection.y > 0 - ( window.TOON.height / 2 ) ){
-			// CAMERA.position.add( toToon )
+		if( dist1 < dist2 && wheel_projection.y > 0 - ( window.USER.height / 2 ) ){
 			CAMERA.offset.add( toToon )
 		}else{
 			// console.log('scroll back block' ) // , wheel_projection
@@ -199,13 +192,9 @@ function wheel( e ){
 
 	}
 
-	// CAMERA.rotation.z = Math.PI
-
-	CAMERA.position.copy( window.TOON.MODEL.position ).add( CAMERA.offset )
+	CAMERA.position.copy( window.USER.MODEL.position ).add( CAMERA.offset )
 
 	RENDERER.frame( SCENE )
-
-	// center_camera()
 
 }
 
@@ -302,7 +291,7 @@ function check_distance( clicked, intersects ){
 		
 	}
 
-	dist = clicked_position.distanceTo( window.TOON.MODEL.position )
+	dist = clicked_position.distanceTo( window.USER.MODEL.position )
 
 	if( dist < required_dist )  return true
 
@@ -370,7 +359,7 @@ function recurse_for( type, search ){
 
 function check_clickable( obj ){
 	if( obj && obj.userData && obj.userData.clickable ){
-		// if( DIALOGUE.TARGET.entity && DIALOGUE.TARGET.entity.mud_id === obj.mud_id ) return false
+		// if( DIALOGUE.TARGET.entity && DIALOGUE.TARGET.entity.arc_id === obj.arc_id ) return false
 		return obj
 	}else{
 		return false

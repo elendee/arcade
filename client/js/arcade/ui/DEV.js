@@ -21,8 +21,8 @@ class Dev {
 
 		// 	let toons = 'crowd:<br>'
 
-		// 	for( const mud_id of Object.keys( data )){
-		// 		toons += data[ mud_id ].name + '<br>'
+		// 	for( const arc_id of Object.keys( data )){
+		// 		toons += data[ arc_id ].name + '<br>'
 		// 	}
 
 		// 	this.crowd.innerHTML = toons
@@ -40,8 +40,8 @@ class Dev {
 		}else if( type == 'pong' ){
 
 			this.zones.innerHTML = ''
-			for( const mud_id of data.zones ){
-				this.zones.innerHTML += mud_id + '<br>'
+			for( const arc_id of data.zones ){
+				this.zones.innerHTML += arc_id + '<br>'
 			}
 
 		}

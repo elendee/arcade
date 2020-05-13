@@ -37,7 +37,7 @@ class Chat {
 		const chat = this
 
 		chat.input.addEventListener('blur', function(){
-			STATE.handler = 'world'
+			STATE.handler = 'arcade'
 			// if( document.body.classList.contains('gallery') ){
 			// 	STATE.handler = 'gallery'
 			// }else if( document.body.classList.contains('station') ){
@@ -61,27 +61,27 @@ class Chat {
 	add_chat( obj ){
 		// type
 		// method
-		// sender_mud_id
+		// sender_arc_id
 		// speaker
 		// chat
 		// color
 
 		const CHAT = this		
 
-		if( !obj.sender_mud_id ){
-			console.log('undefined sender_mud_id ', obj )
+		if( !obj.sender_arc_id ){
+			console.log('undefined sender_arc_id ', obj )
 			return false
 		}
 
-		if( !NPCS[ obj.sender_mud_id ] && !TOONS[ obj.sender_mud_id ] && window.TOON.mud_id !== obj.sender_mud_id ){
-			console.log('no toon found for chat ', obj.sender_mud_id )
+		if( !NPCS[ obj.sender_arc_id ] && !TOONS[ obj.sender_arc_id ] && window.TOON.arc_id !== obj.sender_arc_id ){
+			console.log('no toon found for chat ', obj.sender_arc_id )
 			return false
 		}
 
 		const chat = document.createElement('div')
 		chat.classList.add('chat')
 		chat.classList.add( obj.method )
-		if( obj.sender_mud_id == window.TOON.mud_id ) chat.classList.add('self')
+		if( obj.sender_arc_id == window.TOON.arc_id ) chat.classList.add('self')
 		chat.innerHTML = `<span class="speaker" style="color: ${ obj.color }">${ obj.speaker }: </span>${ obj.chat }`
 
 		this.content.appendChild( chat )
@@ -94,7 +94,7 @@ class Chat {
 			chats[ 0 ].remove()
 		}
 
-		// if( !TOONS[ obj.sender_mud_id ] && window.TOON.mud_id !== obj.sender_mud_id ){
+		// if( !TOONS[ obj.sender_arc_id ] && window.TOON.arc_id !== obj.sender_arc_id ){
 		// 	console.log('speaker not found for chat')
 		// 	return false
 		// }
@@ -188,7 +188,7 @@ class Bubble {
 		this.type = init.type
 		this.hash = lib.random_hex( 6 )
 		this.method = init.method
-		this.sender_mud_id = init.sender_mud_id
+		this.sender_arc_id = init.sender_arc_id
 		this.speaker = init.speaker
 		this.chat = init.chat
 		this.color = init.color
@@ -212,14 +212,14 @@ class Bubble {
 	update_position(){
 
 		let vector
-		if( this.sender_mud_id == window.TOON.mud_id ){
+		if( this.sender_arc_id == window.TOON.arc_id ){
 			vector = new Vector3().copy( window.TOON.MODEL.position )
-		}else if( TOONS[ this.sender_mud_id ] && TOONS[ this.sender_mud_id ].MODEL ){
-			vector = new Vector3().copy( TOONS[ this.sender_mud_id ].MODEL.position )
-		}else if( NPCS[ this.sender_mud_id ] && NPCS[ this.sender_mud_id ].MODEL ){
-			vector = new Vector3().copy( NPCS[ this.sender_mud_id ].MODEL.position )
+		}else if( TOONS[ this.sender_arc_id ] && TOONS[ this.sender_arc_id ].MODEL ){
+			vector = new Vector3().copy( TOONS[ this.sender_arc_id ].MODEL.position )
+		}else if( NPCS[ this.sender_arc_id ] && NPCS[ this.sender_arc_id ].MODEL ){
+			vector = new Vector3().copy( NPCS[ this.sender_arc_id ].MODEL.position )
 		}else{
-			console.log('no model found for chat ', this.sender_mud_id )
+			console.log('no model found for chat ', this.sender_arc_id )
 			return false
 		}
 

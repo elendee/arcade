@@ -2,20 +2,20 @@
 import env from './env.js'
 import hal from './hal.js'
 
-import * as ACTION_BAR from './world/ui/ACTION_BAR.js'
-import * as KEYS from './world/ui/KEYS.js'
+import * as ACTION_BAR from './arcade/ui/ACTION_BAR.js'
+import * as KEYS from './arcade/ui/KEYS.js'
 
-import * as ROUTER from './world/ROUTER.js'
+import * as ROUTER from './arcade/ROUTER.js'
 
-import DEV from './world/ui/DEV.js'
+import DEV from './arcade/ui/DEV.js'
 
-import ZONE from './world/ZONE.js'
+import ARCADE from './arcade/ARCADE.js'
 
 import RENDERER from './three/RENDERER.js'
 
 import User from './User.js'
 
-import Toon from './world/Toon.js'
+// import Toon from './arcade/Toon.js'
 
 document.addEventListener('DOMContentLoaded', function(){
 
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function(){
 	ROUTER.bind()
 	.then( res => {
 		init_session( res )
-		ZONE.render( res.ZONE )
+		ARCADE.render( res.ARCADE )
 	})
 	.catch( err => {
 		console.log( err )
@@ -49,18 +49,17 @@ async function init_session( res ){
 
 	// websocket now bound
 
+
 	// window.SCENE = SCENE
 	window.USER = new User( res.USER )
-	window.TOON = USER.TOON = new Toon( res.TOON )
-	window.TOON.init_inventory()
-	if( env.EXPOSE )  window.ZONE = ZONE
+	// if( env.EXPOSE )  window.ZONE = ZONE
 	// window.TOON.model()
 
 	// SCENE.add( GROUND )
 
 	// SCENE.add( SKYBOX )
 
-	ZONE.initialize()
+	ARCADE.initialize()
 
 	// const box = new BoxBufferGeometry(3, 3, 3)
 	// const wires = new WireframeGeometry( box )

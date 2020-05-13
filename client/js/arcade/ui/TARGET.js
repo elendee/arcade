@@ -1,9 +1,5 @@
 import env from '../../env.js'
 
-// import SOUND from '../../../SOUND.js'
-
-// import ZONE from '../ZONE.js'
-
 import STATE from '../STATE.js'
 import GLOBAL from '../../GLOBAL.js'
 
@@ -91,28 +87,28 @@ class Target {
 	set( clicked, ZONE ){
 
 
-		if( STATE.handler !== 'world' ){
+		if( STATE.handler !== 'arcade' ){
 			console.log( 'should not be running target in state.handler: ', STATE.handler )
 			return false
 		}
 
 		const userData = clicked.userData
 
-		if( userData && userData.mud_id ){
+		if( userData && userData.arc_id ){
 
-			if( this.target && clicked.userData.mud_id !== this.target.mud_id )  this.clear()
+			if( this.target && clicked.userData.arc_id !== this.target.arc_id )  this.clear()
 
-			if( userData.type === 'flora' && ZONE.FLORA[ userData.mud_id ] ) {
+			if( userData.type === 'flora' && ZONE.FLORA[ userData.arc_id ] ) {
 
-				this.target = ZONE.FLORA[ userData.mud_id ]
+				this.target = ZONE.FLORA[ userData.arc_id ]
 
 			}else if( userData.type === 'self' ){
 
 				this.target = window.TOON
 
-			}else if( userData.type === 'npc' && ZONE.NPCS[ userData.mud_id ]){
+			}else if( userData.type === 'npc' && ZONE.NPCS[ userData.arc_id ]){
 
-				this.target = ZONE.NPCS[ userData.mud_id ]
+				this.target = ZONE.NPCS[ userData.arc_id ]
 
 			}
 
@@ -175,7 +171,7 @@ class Target {
 			return false
 		}
 
-		if( this.last_rendered === this.target.mud_id ){
+		if( this.last_rendered === this.target.arc_id ){
 			console.log('reduncdant click')
 			return false
 		}
@@ -215,7 +211,7 @@ class Target {
 
 		// SOUND.play( SOUND.ui.blip[0] )
 
-		this.last_rendered = this.target.mud_id
+		this.last_rendered = this.target.arc_id
 
 		RENDERER.frame( SCENE )
 

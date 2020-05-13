@@ -14,19 +14,10 @@ export default {
 
 	TREE_BASE: 20,
 
-	// AUDIBLE: {
-
-	// 	EXPLOSION: 1500
-
-	// },
-
 	MAX_CAM: 300,
 
 	MIN_CAM: 150,
 
-	// TILE_WIDTH: 10,
-
-	// MATERIALIZE_TIME: 1000,
 	HEMI_FACE_COLOR: 0xff000,
 	HEMI_FACE_COLOR: 0x000ff,
 	HEMI_INTENSITY: 1,
@@ -94,14 +85,14 @@ export default {
 
 	SPEAKER: 3,
 
-	PROFILE_IMGS: {
-		unknown: 'unknown.png',
-		flora: 'flora.png',
-		toon: 'toon.png',
-		self: 'toon.png',
-		npc: 'toon.png',
-		structure: 'structure.png'
-	}
+	// PROFILE_IMGS: {
+	// 	unknown: 'unknown.png',
+	// 	flora: 'flora.png',
+	// 	toon: 'toon.png',
+	// 	self: 'toon.png',
+	// 	npc: 'toon.png',
+	// 	structure: 'structure.png'
+	// }
 	// SPEAKER: 80
 
 }

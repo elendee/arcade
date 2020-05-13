@@ -61,7 +61,7 @@ module.exports = class Toon extends Persistent {
 
 			for( const item of results ){
 				const this_item = new FACTORY( item )
-				this._INVENTORY[ this_item.mud_id ] = this_item
+				this._INVENTORY[ this_item.arc_id ] = this_item
 			}
 
 			return true
@@ -74,7 +74,7 @@ module.exports = class Toon extends Persistent {
 				icon_url: 'noun_stick.png'
 			})
 			if( stick ){
-				this._INVENTORY[ stick.mud_id ] = stick
+				this._INVENTORY[ stick.arc_id ] = stick
 			}
 			const trousers = new FACTORY({
 				type: 'melee',
@@ -82,7 +82,7 @@ module.exports = class Toon extends Persistent {
 				icon_url: 'noun_trousers.png'
 			})
 			if( trousers ){
-				this._INVENTORY[ trousers.mud_id ] = trousers
+				this._INVENTORY[ trousers.arc_id ] = trousers
 			}
 
 			return true

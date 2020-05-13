@@ -50,7 +50,7 @@ export default class Flora {
 
 		init = init || {}
 
-		this.mud_id = init.mud_id
+		this.arc_id = init.arc_id
 
 		this.type = init.type
 

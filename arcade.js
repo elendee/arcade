@@ -234,20 +234,20 @@ exp.post('/update', function( request, response ){
 
 // 		const FILE = request.files.upload
 
-// 		const slot_mud_id = request.body.slot_mud_id
+// 		const slot_arc_id = request.body.slot_arc_id
 // 		const title = request.body.title
 // 		const description = request.body.description
 
 // 		const tempPath = FILE.path
 
 // 		const file_URL = `${ Date.now() }__${ FILE.originalFilename }`
-// 		const mud_idPath = env.UPLOAD_DIR + request.session.USER.mud_id
+// 		const arc_idPath = env.UPLOAD_DIR + request.session.USER.arc_id
 
-// 		const finalPath = mud_idPath + '/' + file_URL
+// 		const finalPath = arc_idPath + '/' + file_URL
 
 // 		if( '(check valid)' == '(check valid)' ){
 
-// 			mkdirp( mud_idPath, { mode: '0744' })
+// 			mkdirp( arc_idPath, { mode: '0744' })
 // 			.then( res => {
 
 // 				// fs.rename( tempPath, finalPath, err => {
@@ -260,7 +260,7 @@ exp.post('/update', function( request, response ){
 
 // 					// log('flag', 'request.session.USER.website: ', request.session.USER )
 
-// 					GAME.add_img_upload( request.session.USER.mud_id, slot_mud_id, file_URL, description, title )
+// 					GAME.add_img_upload( request.session.USER.arc_id, slot_arc_id, file_URL, description, title )
 // 					.then( res => {
 // 						if( res.success ){
 // 							response.json({
@@ -405,24 +405,24 @@ DB.initPool(( err, pool ) => {
 
 				log('flag', 'WUNDERBAR, OPENING ARCADE')
 
-				// GAME.opening = true
+				GAME.opening = true
 
-				// GAME.init_async_elements()
-				// .then( res => {
+				GAME.init_async_elements()
+				.then( res => {
 			
-				// 	GAME.opening = false
+					GAME.opening = false
 			
-				// 	GAME.init_sync_elements()
+					GAME.init_sync_elements()
 			
-				// 	GAME.init_user( socket )
-				// 	.catch( err => {
-				// 		log('flag', 'err init user:', err )
-				// 	})
+					GAME.init_user( socket )
+					.catch( err => {
+						log('flag', 'err init user:', err )
+					})
 			
-				// })
-				// .catch( err => {
-				// 	log('flag', 'err opening GAME: ', err )
-				// })
+				})
+				.catch( err => {
+					log('flag', 'err opening GAME: ', err )
+				})
 
 			}
 
@@ -503,9 +503,9 @@ function try_readline( msg ){
 
 function hal( type, msg, time ){
 
-	for( const mud_id of Object.keys( SOCKETS ) ){
+	for( const arc_id of Object.keys( SOCKETS ) ){
 
-		SOCKETS[ mud_id ].send(JSON.stringify({
+		SOCKETS[ arc_id ].send(JSON.stringify({
 			type: 'hal',
 			hal_type: type,
 			msg: msg,
