@@ -6,7 +6,7 @@ const header_info = `
 	<meta property="og:url" content="https://arcade.oko.nyc">
 	<meta property="og:title" content="arcade">
 	<meta property="og:description" content="javascript arcade"> 
-	<meta property="og:image" content="https://arcade.oko.nyc/resource/media/featured-image.png"/>`
+	<meta property="og:image" content="https://arcade.oko.nyc/resource/images/sierra.png"/>`
 
 const scripts = {
 	base: `<script src='/client/js/base.js'></script>`,

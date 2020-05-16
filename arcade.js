@@ -68,7 +68,7 @@ const lru_session = session({
 
 const gatekeep = function(req, res, next) {
 
-	if( req.path.match(/\/resource/) || req.path.match(/\/client/) || req.path.match(/favicon/)){
+	if( req.path.match(/\/resources/) || req.path.match(/\/client/) || req.path.match(/favicon/)){
 
 		// log('flag', 'resource: ', req.path )
 
@@ -128,11 +128,9 @@ exp.use( FormData.format() )
 // exp.set( 'port', env.PORT )
 
 exp.use('/client', express.static( './client' )) // __dirname + 
-// exp.use('/static', express.static( '/resource' )) // __dirname + 
-exp.use('/resource', express.static( './resource' )) // __dirname + 
+exp.use('/resources', express.static( './resources' )) // __dirname + 
 exp.use('/fs', express.static( '/fs' )) // __dirname + 
-exp.use('/favicon.ico', express.static( '/resource/favicon.ico') )
-// exp.use('/fs', express.static(__dirname + '/fs'))
+exp.use('/favicon.ico', express.static( '/resources/favicon.ico') )
 exp.use( bodyParser.json({ 
 	type: 'application/json' 
 }))
