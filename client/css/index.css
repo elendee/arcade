@@ -3,7 +3,7 @@ html{
 }
 
 body{
-    background: url(../../resource/images/sierra.png);
+    background: url(../../resources/images/sierra.png);
     background-size: 100%;
     background-repeat: no-repeat;
     background-position: 50% 100%;
@@ -48,8 +48,8 @@ form input::placeholder{
 
 #play-contain{
     position: fixed;
-    bottom: 25%;
-    left: 50%;
+    bottom: 5%;
+    left: 48%;
     margin-left: -100px;
     width: 200px;
     border: 1px solid;

@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', function(){
 	ROUTER.bind()
 	.then( res => {
 		init_session( res )
+		ARCADE.initialize()
 		ARCADE.render( res.ARCADE )
 	})
 	.catch( err => {
@@ -59,7 +60,6 @@ async function init_session( res ){
 
 	// SCENE.add( SKYBOX )
 
-	ARCADE.initialize()
 
 	// const box = new BoxBufferGeometry(3, 3, 3)
 	// const wires = new WireframeGeometry( box )

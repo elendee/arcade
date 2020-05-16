@@ -24,11 +24,15 @@ import {
 	MeshLambertMaterial,
 	DoubleSide,
 	Mesh,
-	Object3D
+	MeshBasicMaterial,
+	Object3D,
+	NearestFilter,
+	sRGBEncoding
 } from '../lib/three.module.js'
 
 
 import texLoader from '../three/texLoader.js'
+import BuffGeoLoader from '../three/texLoader.js'
 
 if( env.EXPOSE ){
 	window.SCENE = SCENE
@@ -74,13 +78,15 @@ class Arcade {
 		CHAT.init()
 		// DIALOGUE.init()
 
-		USER.model('self')
-
 		SCENE.add( LIGHT.hemispherical )
-		SCENE.add( LIGHT.spotlight )
-		// SCENE.add( LIGHT.directional )
-		LIGHT.spotlight.position.set( window.USER.MODEL.position.x, window.USER.MODEL.position.y + 20, window.USER.MODEL.position.z + 20 )
-		LIGHT.spotlight.lookAt( window.USER.MODEL.position )
+		// SCENE.add( LIGHT.spotlight )
+		SCENE.add( LIGHT.directional )
+		// LIGHT.spotlight.position.set( 
+		// 	window.USER.MODEL.position.x, 
+		// 	window.USER.MODEL.position.y + 20, 
+		// 	window.USER.MODEL.position.z + 20 
+		// )
+		// LIGHT.spotlight.lookAt( window.USER.MODEL.position )
 		LIGHT.directional.position.set( 
 			MAP.ZONE_WIDTH * 1.2, 
 			400, 
@@ -91,6 +97,9 @@ class Arcade {
 		ltarget.position.set( MAP.ZONE_WIDTH / 2 , 0, MAP.ZONE_WIDTH / 2 )
 		SCENE.add( ltarget )
 		LIGHT.directional.target = ltarget
+
+
+		USER.model('self')
 
 		SCENE.add( USER.MODEL )
 		// SCENE.add( LIGHT.helper )
@@ -130,44 +139,59 @@ class Arcade {
 
 		// tiles
 
-		const geometry = new PlaneBufferGeometry( MAP.TILE_WIDTH, MAP.TILE_WIDTH, 32 )
+		const geometry = new PlaneBufferGeometry( MAP.ZONE_WIDTH, MAP.ZONE_WIDTH, 32 )
 		const material = new MeshLambertMaterial({ 
-			color: 0x001122, 
+			color: 0x333232, 
 			// map: ground,
 			// side: DoubleSide 
 		})
 
-		let tile
-		let width = Math.ceil( MAP.ZONE_WIDTH / MAP.TILE_WIDTH ) + 2
-		let height = Math.ceil( MAP.ZONE_WIDTH / MAP.TILE_WIDTH ) + 2
+		const ground = new Mesh( geometry, material )
+		ground.receiveShadow = true
+		ground.rotation.x = -Math.PI / 2
+		ground.position.set( 0, 0, 0 )
+		SCENE.add( ground )
 
-		// totally overlapping tiles but oh well....
 
-		for( let x = -2; x < width; x++ ){
-			for( let z = -2; z < height; z++ ){
-				
-				const ground = new Mesh( geometry, material )
-				ground.receiveShadow = true
-				ground.rotation.x = -Math.PI / 2
-				ground.position.set( x * MAP.TILE_WIDTH + ( 0 ), .1, z * MAP.TILE_WIDTH  + ( 0 ))
-				SCENE.add( ground )
+		// group of 4 machines
+		var arcadegroup = new THREE.Group();
+		arcadegroup.position.y = -1;
+		scene.add( arcadegroup );
 
-			}	
-		}
+		// texture
+		machinetex = texLoader.load('/resource/textures/arcade2c.png')
+		machinetex.magFilter = NearestFilter;
+		machinetex.minFilter = NearestFilter;
+		machinetex.encoding = sRGBEncoding;
 
-		const box_geo = new BoxBufferGeometry( 10, 10, 10 )
-		const box_mat = new MeshLambertMaterial({
-			color: 'rgb(100, 50, 50)'
+
+		// load model
+		BuffGeoLoader.load('/resources/geometries/.arcade.json', function ( geometry ) {
+			var material = new MeshBasicMaterial( { 
+				map:machinetex
+				,transparent:true
+			 } );
+			var object = new Mesh( geometry, material );
+			object.rotation.y = Math.PI;
+			// object.receiveShadow = true;
+			object.castShadow = true;
+			object.scale.set (1.3,1.3,1.3);
+			arcadegroup.add( object );
 		})
-		const box = new Mesh( box_geo, box_mat )
-		box.castShadow = true
-		SCENE.add( box )
-		box.position.copy( USER.MODEL.position )
-		box.position.x += 20
+
+
+		// const box_geo = new BoxBufferGeometry( 10, 10, 10 )
+		// const box_mat = new MeshLambertMaterial({
+		// 	color: 'rgb(100, 50, 50)'
+		// })
+		// const box = new Mesh( box_geo, box_mat )
+		// box.castShadow = true
+		// SCENE.add( box )
+		// box.position.copy( USER.MODEL.position )
+		// box.position.x += 20
 
 		RENDERER.frame( SCENE )
 		
-
 	}
 
 
