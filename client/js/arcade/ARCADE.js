@@ -52,7 +52,7 @@ if( env.EXPOSE ){
 
 let new_pos, new_quat, old_pos, old_quat, needs_move, needs_rotate
 
-// const ground_mat = texLoader.load('/resource/textures/concrete.jpg')
+const ground_mat = texLoader.load('/resources/textures/concrete.jpg')
 
 
 class Arcade {
@@ -141,7 +141,7 @@ class Arcade {
 		const geometry = new PlaneBufferGeometry( MAP.ZONE_WIDTH, MAP.ZONE_WIDTH, 32 )
 		const material = new MeshLambertMaterial({ 
 			color: 0x333232, 
-			// map: ground_mat,
+			map: ground_mat,
 			// side: DoubleSide 
 		})
 
