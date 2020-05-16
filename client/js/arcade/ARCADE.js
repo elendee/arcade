@@ -1,3 +1,4 @@
+import * as lib from '../lib.js'
 import env from '../env.js'
 
 import SCENE from '../three/SCENE.js'
@@ -14,7 +15,14 @@ import * as KEYS from './ui/KEYS.js'
 import * as MOUSE from './ui/MOUSE.js'
 import CHAT from './ui/CHAT.js'
 
-import * as ANIMATE from './animate.js'
+import STATE from './STATE.js'
+
+// import SKYBOX from '../three/SKYBOX.js'
+
+import animate from './animate.js'
+
+// import * as ANIMATE from './animate.js'
+
 
 import {
 	Vector3,
@@ -27,22 +35,24 @@ import {
 	MeshBasicMaterial,
 	Object3D,
 	NearestFilter,
-	sRGBEncoding
+	sRGBEncoding,
+	Group
 } from '../lib/three.module.js'
 
 
 import texLoader from '../three/texLoader.js'
-import BuffGeoLoader from '../three/texLoader.js'
+// import BuffGeoLoader from '../three/texLoader.js'
 
 if( env.EXPOSE ){
 	window.SCENE = SCENE
+	window.TOONS = TOONS
 }
 
 
 
 let new_pos, new_quat, old_pos, old_quat, needs_move, needs_rotate
 
-// const ground = texLoader.load('/resource/textures/grass.jpg')
+// const ground_mat = texLoader.load('/resource/textures/concrete.jpg')
 
 
 class Arcade {
@@ -76,17 +86,9 @@ class Arcade {
 		KEYS.init( this )
 		MOUSE.init( this )
 		CHAT.init()
-		// DIALOGUE.init()
 
 		SCENE.add( LIGHT.hemispherical )
-		// SCENE.add( LIGHT.spotlight )
 		SCENE.add( LIGHT.directional )
-		// LIGHT.spotlight.position.set( 
-		// 	window.USER.MODEL.position.x, 
-		// 	window.USER.MODEL.position.y + 20, 
-		// 	window.USER.MODEL.position.z + 20 
-		// )
-		// LIGHT.spotlight.lookAt( window.USER.MODEL.position )
 		LIGHT.directional.position.set( 
 			MAP.ZONE_WIDTH * 1.2, 
 			400, 
@@ -98,19 +100,16 @@ class Arcade {
 		SCENE.add( ltarget )
 		LIGHT.directional.target = ltarget
 
-
 		USER.model('self')
 
 		SCENE.add( USER.MODEL )
 		// SCENE.add( LIGHT.helper )
 		USER.MODEL.position.copy( USER.ref.position )
 
-		LIGHT.helper.position.copy( USER.MODEL.position )
+		// LIGHT.helper.position.copy( USER.MODEL.position )
 
-		// USER.HEAD.add( CAMERA )
-		// USER.MODEL.add( CAMERA )
-		SCENE.add( CAMERA )
-	    CAMERA.position.copy( window.USER.MODEL.position ).add( CAMERA.offset )
+		USER.MODEL.add( CAMERA )
+	    CAMERA.position.set( 0, 0, 0 ).add( CAMERA.offset )
 		// CAMERA.position.set( 0, 150, 20 )
 
 
@@ -142,55 +141,58 @@ class Arcade {
 		const geometry = new PlaneBufferGeometry( MAP.ZONE_WIDTH, MAP.ZONE_WIDTH, 32 )
 		const material = new MeshLambertMaterial({ 
 			color: 0x333232, 
-			// map: ground,
+			// map: ground_mat,
 			// side: DoubleSide 
 		})
 
 		const ground = new Mesh( geometry, material )
 		ground.receiveShadow = true
 		ground.rotation.x = -Math.PI / 2
-		ground.position.set( 0, 0, 0 )
+		ground.position.set( MAP.ZONE_WIDTH / 2, 0, MAP.ZONE_WIDTH / 2 )
 		SCENE.add( ground )
 
 
 		// group of 4 machines
-		var arcadegroup = new THREE.Group();
-		arcadegroup.position.y = -1;
-		scene.add( arcadegroup );
+		var arcadegroup = new Group()
+		// arcadegroup.position.set( MAP.ZONE_WIDTH / 2, 3, MAP.ZONE_WIDTH / 2)
+		arcadegroup.position.set( MAP.ZONE_WIDTH / 2, 3, MAP.ZONE_WIDTH / 2)
+		SCENE.add( arcadegroup )
+		// window.arcadegroup = arcadegroup
 
 		// texture
-		machinetex = texLoader.load('/resource/textures/arcade2c.png')
-		machinetex.magFilter = NearestFilter;
-		machinetex.minFilter = NearestFilter;
-		machinetex.encoding = sRGBEncoding;
-
+		const machinetex = texLoader.load('/resources/textures/arcade2c.png')
+		machinetex.magFilter = NearestFilter
+		machinetex.minFilter = NearestFilter
+		machinetex.encoding = sRGBEncoding
 
 		// load model
-		BuffGeoLoader.load('/resources/geometries/.arcade.json', function ( geometry ) {
-			var material = new MeshBasicMaterial( { 
-				map:machinetex
-				,transparent:true
-			 } );
-			var object = new Mesh( geometry, material );
-			object.rotation.y = Math.PI;
-			// object.receiveShadow = true;
-			object.castShadow = true;
-			object.scale.set (1.3,1.3,1.3);
-			arcadegroup.add( object );
-		})
+		lib.load('buffer_geometry', '/resources/geometries/arcade.json' )
+		.then( geometry =>{
+			const material = new MeshBasicMaterial({ 
+				map: machinetex,
+				transparent: true
+			})
+			const object = new Mesh( geometry, material )
+			object.userData.clickable = true
+			object.userData.name = 'GAME_' + lib.random_hex(5)
+
+			object.rotation.y = Math.PI
+			// object.receiveShadow = true
+			object.castShadow = true
+			object.scale.set ( 2, 2, 2 )
+			arcadegroup.add( object )
+		}).catch( err=> { console.log('load err: ', ) } )
+
+		// SKYBOX.position.set( MAP.ZONE_WIDTH / 2, 0, MAP.ZONE_WIDTH / 2)
+		// window.SKYBOX = SKYBOX 
+		// SCENE.add( SKYBOX )
 
 
-		// const box_geo = new BoxBufferGeometry( 10, 10, 10 )
-		// const box_mat = new MeshLambertMaterial({
-		// 	color: 'rgb(100, 50, 50)'
-		// })
-		// const box = new Mesh( box_geo, box_mat )
-		// box.castShadow = true
-		// SCENE.add( box )
-		// box.position.copy( USER.MODEL.position )
-		// box.position.x += 20
 
-		RENDERER.frame( SCENE )
+		STATE.animating = true
+		animate()
+
+		// RENDERER.frame( SCENE )
 		
 	}
 
@@ -208,16 +210,16 @@ class Arcade {
 
 	begin_intervals(){
 
-		this.intervals.anim_sweeper = setInterval(function(){
+		// this.intervals.anim_sweeper = setInterval(function(){
 
-			for( const arc_id of ANIMATE.moving_toons ){
-				if( !TOONS[ arc_id ]) ANIMATE.moving_toons.splice( ANIMATE.moving_toons.indexOf( arc_id ), 1 )
-			}
-			for( const arc_id of ANIMATE.rotating_toons ){
-				if( !TOONS[ arc_id ]) ANIMATE.rotating_toons.splice( ANIMATE.rotating_toons.indexOf( arc_id ), 1 )
-			}
+		// 	for( const arc_id of ANIMATE.moving_toons ){
+		// 		if( !TOONS[ arc_id ]) ANIMATE.moving_toons.splice( ANIMATE.moving_toons.indexOf( arc_id ), 1 )
+		// 	}
+		// 	for( const arc_id of ANIMATE.rotating_toons ){
+		// 		if( !TOONS[ arc_id ]) ANIMATE.rotating_toons.splice( ANIMATE.rotating_toons.indexOf( arc_id ), 1 )
+		// 	}
 
-		}, 10000 )
+		// }, 10000 )
 
 		if( env.LOCAL ){
 
@@ -237,8 +239,9 @@ class Arcade {
 
 
 
-
 	handle_move( packet ){
+
+		// console.log( packet )
 
 		for( const arc_id of Object.keys( packet ) ){
 
@@ -255,48 +258,23 @@ class Arcade {
 
 				}else{
 
-					// console.log('updating patron pos: ', arc_id )
-					needs_move = needs_rotate = false
+					console.log('updating patron pos: ', arc_id )
 
 					// if( !TOONS[ arc_id ] ) console.log('wtf: ', TOONS[ arc_id ] )
-					new_pos = packet[ arc_id ].position
-					new_quat = packet[ arc_id ].quaternion
-					old_pos = TOONS[ arc_id ].ref.position
-					old_quat = TOONS[ arc_id ].ref.quaternion
 
-					if( new_pos.x !== old_pos.x || new_pos.y !== old_pos.y || new_pos.z !== old_pos.z )  needs_move = true
-					if( new_quat._x !== old_quat._x || new_quat._y !== old_quat._y || new_quat._z !== old_quat._z || new_quat._w !== old_quat._w )  needs_rotate = true
+					TOONS[ arc_id ].ref.position.x = packet[ arc_id ].position.x
+					TOONS[ arc_id ].ref.position.y = packet[ arc_id ].position.y
+					TOONS[ arc_id ].ref.position.z = packet[ arc_id ].position.z
 
-					if( needs_move ){
+					TOONS[ arc_id ].ref.quaternion = new Quaternion( 
+						packet[ arc_id ].quaternion._x,
+						packet[ arc_id ].quaternion._y,
+						packet[ arc_id ].quaternion._z,
+						packet[ arc_id ].quaternion._w
+					)
 
-						old_pos.set(
-							new_pos.x,
-							new_pos.y,
-							new_pos.z
-						)
-						// old_pos.x = new_pos.x
-						// old_pos.y = new_pos.y
-						// old_pos.z = new_pos.z
-
-					}
-
-					if( needs_rotate ){
-
-						// old_quat = new Quaternion( 
-						old_quat.set( 
-							new_quat._x,
-							new_quat._y,
-							new_quat._z,
-							new_quat._w
-						)
-
-					}
-
-					if( needs_move ) ANIMATE.receive_move()
-					if( needs_rotate ) ANIMATE.receive_rotate()
-
-					TOONS[ arc_id ].needs_move = needs_move
-					TOONS[ arc_id ].needs_rotate = Number( needs_rotate ) * 400
+					TOONS[ arc_id ].needs_lerp = true
+					TOONS[ arc_id ].needs_slerp = 400
 
 				}
 
@@ -310,23 +288,99 @@ class Arcade {
 
 	}
 
+	// handle_move( packet ){
+
+	// 	for( const arc_id of Object.keys( packet ) ){
+
+	// 		if( window.USER.arc_id !== arc_id ){
+
+	// 			if( !TOONS[ arc_id ] ){
+
+	// 				console.log('requesting: ', arc_id )
+
+	// 				window.SOCKET.send(JSON.stringify({
+	// 					type: 'toon_ping',
+	// 					arc_id: arc_id
+	// 				}))
+
+	// 			}else{
+
+	// 				// console.log('updating patron pos: ', arc_id )
+	// 				needs_move = needs_rotate = false
+
+	// 				// if( !TOONS[ arc_id ] ) console.log('wtf: ', TOONS[ arc_id ] )
+	// 				new_pos = packet[ arc_id ].position
+	// 				new_quat = packet[ arc_id ].quaternion
+	// 				old_pos = TOONS[ arc_id ].ref.position
+	// 				old_quat = TOONS[ arc_id ].ref.quaternion
+
+	// 				if( new_pos.x !== old_pos.x || new_pos.y !== old_pos.y || new_pos.z !== old_pos.z )  needs_move = true
+	// 				if( new_quat._x !== old_quat._x || new_quat._y !== old_quat._y || new_quat._z !== old_quat._z || new_quat._w !== old_quat._w )  needs_rotate = true
+
+	// 				if( needs_move ){
+
+	// 					old_pos.set(
+	// 						new_pos.x,
+	// 						new_pos.y,
+	// 						new_pos.z
+	// 					)
+	// 					// old_pos.x = new_pos.x
+	// 					// old_pos.y = new_pos.y
+	// 					// old_pos.z = new_pos.z
+
+	// 				}
+
+	// 				if( needs_rotate ){
+
+	// 					// old_quat = new Quaternion( 
+	// 					old_quat.set( 
+	// 						new_quat._x,
+	// 						new_quat._y,
+	// 						new_quat._z,
+	// 						new_quat._w
+	// 					)
+
+	// 				}
+
+	// 				if( needs_move ) ANIMATE.receive_move()
+	// 				if( needs_rotate ) ANIMATE.receive_rotate()
+
+	// 				TOONS[ arc_id ].needs_move = needs_move
+	// 				TOONS[ arc_id ].needs_rotate = Number( needs_rotate ) * 400
+
+	// 			}
+
+	// 		}else{
+
+	// 			// console.log('skipping self data in move pulse')
+
+	// 		}
+
+	// 	}
+
+	// }
+
+	touch_patron( obj ){
+		console.log('unhandled legacy function: ', obj )
+	}
+
 
 	touch_toon( packet ){
 
-		if( packet.toon ){
-			if( TOONS[ packet.toon.arc_id ] ){
+		if( packet.user ){
+			if( TOONS[ packet.user.arc_id ] ){
 				// update
 			}else{
-				TOONS[ packet.toon.arc_id ] = new User( packet.toon )
-				TOONS[ packet.toon.arc_id ].model()
-				SCENE.add( TOONS[ packet.toon.arc_id ].MODEL )
-				TOONS[ packet.toon.arc_id ].MODEL.position.set(
-					TOONS[ packet.toon.arc_id ].ref.position.x,
-					TOONS[ packet.toon.arc_id ].ref.position.y,
-					TOONS[ packet.toon.arc_id ].ref.position.z
+				TOONS[ packet.user.arc_id ] = new User( packet.user )
+				TOONS[ packet.user.arc_id ].model()
+				SCENE.add( TOONS[ packet.user.arc_id ].MODEL )
+				TOONS[ packet.user.arc_id ].MODEL.position.set(
+					TOONS[ packet.user.arc_id ].ref.position.x,
+					TOONS[ packet.user.arc_id ].ref.position.y,
+					TOONS[ packet.user.arc_id ].ref.position.z
 				)
 
-				RENDERER.frame( SCENE )
+				// RENDERER.frame( SCENE )
 
 			}
 		}

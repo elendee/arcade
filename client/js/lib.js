@@ -1,3 +1,16 @@
+import {
+	Vector3,
+	Quaternion,
+	BufferGeometry,
+
+} from './lib/three.module.js'
+
+import GLTF from './three/GLTF.js'
+import BuffGeoLoader from './three/BuffGeoLoader.js'
+import ObjectLoader from './three/ObjectLoader.js'
+
+
+
 
 
 function radians_to_degrees( radians ){
@@ -26,7 +39,59 @@ function random_hex( len ){
 }
 
 
+function load( type, filepath ){
 
+	return new Promise((resolve, reject)=>{
+
+		switch ( type ){
+
+			case 'buffer_geometry':
+				BuffGeoLoader.load( filepath, 
+				( obj ) => {
+					resolve( obj )
+				}, (xhr) => {
+					// console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' )
+				}, ( error ) => {
+					console.log('error loading model: ', error, filepath )
+					reject( 'model not found' )
+				})
+
+				break;
+
+			case 'gltf':
+				GLTF.load( filepath, 
+				( obj ) => {
+					resolve( obj )
+				}, (xhr) => {
+					// console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' )
+				}, ( error ) => {
+					console.log('error loading model: ', error, filepath )
+					reject( 'model not found' )
+				})
+
+				break;
+
+			case 'json':
+				ObjectLoader.load( filepath, 
+				( obj ) => {
+					resolve( obj )
+				}, (xhr) => {
+					// console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' )
+				}, ( error ) => {
+					console.log('error loading model: ', error, filepath )
+					reject( 'model not found' )
+				})
+				break;
+
+			default: 
+				reject('invalid model file request')
+				break;
+
+		}
+
+	})
+
+}
 
 
 
@@ -34,6 +99,7 @@ function random_hex( len ){
 export {
 	random_hex,
 	degrees_to_radians,
-	radians_to_degrees
+	radians_to_degrees,
+	load
 	// clear_object
 }

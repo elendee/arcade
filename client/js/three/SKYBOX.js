@@ -12,7 +12,7 @@ import {
 
 
 
-import SCENE from './SCENE.js'
+// import SCENE from './SCENE.js'
 
 let skyBox = false
 
@@ -22,25 +22,26 @@ export default (function(){
 
 	// const box_img = '/resource/textures/skybox/bluecloud_'
 
-	const directions  = ['ft', 'bk', 'up', 'dn', 'rt', 'lt']
+	// const directions  = ['ft', 'bk', 'up', 'dn', 'rt', 'lt']
 
-	let skyGeometry = new CubeGeometry( GLOBAL.SKY_WIDTH, GLOBAL.SKY_WIDTH, GLOBAL.SKY_WIDTH )	
+	let skyGeometry = new CubeGeometry( GLOBAL.SKY_WIDTH / 10, GLOBAL.SKY_WIDTH / 10, GLOBAL.SKY_WIDTH / 10 )	
 	let materialArray = new Array(6)
 
 	const loader = new TextureLoader()
-		
-	for(let i=0;i<6;i++){
-		loader.load( '/resource/textures/skybox/starfield.jpg', function(tex){
-		// loader.load( box_img + directions[i] + '.jpg', function(tex){
-			materialArray[i] =  new MeshBasicMaterial({
-				map: tex,
-				side: BackSide,
-				fog: false
-			})		
-		} )
-	}
+	loader.load( '/resource/textures/starfield.jpg', function(tex){
+		const tex_mat = new MeshBasicMaterial({
+			map: tex,
+			side: BackSide,
+			fog: false
+		})		
+		for(let i=0;i < 6; i++ ){
+			materialArray[i] = tex_mat
+		}
+	})
 		
 	skyBox = new Mesh( skyGeometry, materialArray )
+
+	skyBox.userData.howdy = 'howdy'
 
 	return skyBox
 

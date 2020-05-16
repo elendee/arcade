@@ -39,10 +39,10 @@ class Dev {
 
 		}else if( type == 'pong' ){
 
-			this.zones.innerHTML = ''
-			for( const arc_id of data.zones ){
-				this.zones.innerHTML += arc_id + '<br>'
-			}
+			this.zones.innerHTML = 'no zones'
+			// for( const arc_id of data.zones ){
+			// 	this.zones.innerHTML += arc_id + '<br>'
+			// }
 
 		}
 

@@ -20,6 +20,8 @@ class User {
 			this[ key ] = init[ key ]
 		}
 
+		console.log( this.ref )
+
 		if( this.ref.position ){
 			this.ref.position = new Vector3(
 				this.ref.position.x,

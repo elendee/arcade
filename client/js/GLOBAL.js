@@ -14,9 +14,9 @@ export default {
 
 	TREE_BASE: 20,
 
-	MAX_CAM: 300,
+	MAX_CAM: 100,
 
-	MIN_CAM: 150,
+	MIN_CAM: 20,
 
 	HEMI_FACE_COLOR: 0xff000,
 	HEMI_FACE_COLOR: 0x000ff,
@@ -29,7 +29,7 @@ export default {
 
 	VIEW: 15000,
 
-	SKY_WIDTH: 14900,
+	SKY_WIDTH: 3000,
 
 	SUN_DIST: 200,
 
@@ -43,9 +43,9 @@ export default {
 
 	FOG_SCALAR: 0.0001,
 
-	GRAVITY_FIELD_BEGIN: 100000,
+	// GRAVITY_FIELD_BEGIN: 100000,
 
-	GRAVITY_FIELD_NORETURN: 10000,
+	// GRAVITY_FIELD_NORETURN: 10000,
 
 	FPS_MAP: {
 		'very_low': 10,

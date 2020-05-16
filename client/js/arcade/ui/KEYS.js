@@ -16,7 +16,7 @@ import BINDS from './BINDS.js'
 
 import TARGET from './TARGET.js'
 
-import * as ANIMATE from '../animate.js'
+// import * as ANIMATE from '../animate.js'
 
 // const BAR = getBar()
 
@@ -71,36 +71,52 @@ function handle_keydown( e ){
 				break;
 
 			case BINDS.arcade.move.left:
-				ANIMATE.move('left', true )
+				STATE.stream_down = true
+				STATE.move.left = true
+				// ANIMATE.move('left', true )
 				break
 
 			case BINDS.arcade.move.right:
-				ANIMATE.move('right', true )
+				STATE.stream_down = true
+				STATE.move.right = true
+				// ANIMATE.move('right', true )
 				break
 
 			case BINDS.arcade.move.forward: 
-				ANIMATE.move('forward', true )
+				STATE.stream_down = true
+				STATE.move.forward = true
+				// ANIMATE.move('forward', true )
 				break
 
 			case BINDS.arcade.move.back:
-				ANIMATE.move('back', true )
+				STATE.stream_down = true
+				STATE.move.back = true
+				// ANIMATE.move('back', true )
 				break
 
 			case BINDS.arcade.move_alt.forward:
-				ANIMATE.move('forward', true )
+				STATE.stream_down = true
+				STATE.move.forward = true
+				// ANIMATE.move('forward', true )
 				break;
 
 			case BINDS.arcade.move_alt.back:
-				ANIMATE.move('back', true )
+				STATE.stream_down = true
+				STATE.move.back = true
+				// ANIMATE.move('back', true )
 				break;
 
 			case BINDS.arcade.turn.left:
-				ANIMATE.move('left', true)
+				STATE.stream_down = true
+				STATE.move.left = true
+				// ANIMATE.move('left', true)
 				// ANIMATE.digital_turn('left', true )
 				break;
 
 			case BINDS.arcade.turn.right:
-				ANIMATE.move('right', true)
+				STATE.stream_down = true
+				STATE.move.right = true
+				// ANIMATE.move('right', true)
 				// ANIMATE.digital_turn('right', true )
 				break;
 
@@ -174,36 +190,60 @@ function handle_keyup( e ){
 			switch(e.keyCode){
 
 			case BINDS.arcade.move.forward:
-				ANIMATE.move('forward', false)
+				// STATE.stream_down = true
+				STATE.move.forward = false				
+				check_stream()
+				// ANIMATE.move('forward', false)
 				break
 
 			case BINDS.arcade.move.back:
-				ANIMATE.move('back', false)
+				// STATE.stream_down = false
+				STATE.move.back = false				
+				check_stream()
+				// ANIMATE.move('back', false)
 				break
 
 			case BINDS.arcade.move.left:
-				ANIMATE.move('left', false)
+				// STATE.stream_down = false
+				STATE.move.left = false				
+				check_stream()
+				// ANIMATE.move('left', false)
 				break
 
 			case BINDS.arcade.move.right:
-				ANIMATE.move('right', false)
+				// STATE.stream_down = false
+				STATE.move.right = false				
+				check_stream()
+				// ANIMATE.move('right', false)
 				break
 
 			case BINDS.arcade.move_alt.forward:
-				ANIMATE.move('forward', false)
+				// STATE.stream_down = false
+				STATE.move.forward = false				
+				check_stream()
+				// ANIMATE.move('forward', false)
 				break;
 
 			case BINDS.arcade.move_alt.back:
-				ANIMATE.move('back', false)
+				// STATE.stream_down = false
+				STATE.move.back = false				
+				check_stream()
+				// ANIMATE.move('back', false)
 				break;
 
 			case BINDS.arcade.turn.left:
+				// STATE.stream_down = false
 				// ANIMATE.digital_turn('left', false)
-				ANIMATE.move('left', false)
+				check_stream()
+				STATE.move.false = false					
+				// ANIMATE.move('left', false)
 				break;
 
 			case BINDS.arcade.turn.right:
-				ANIMATE.move('right', false) // these should be 'move_alt', too lazy...
+				// STATE.stream_down = false
+				STATE.move.right = false		
+				check_stream()		
+				// ANIMATE.move('right', false) // these should be 'move_alt', too lazy...
 				// ANIMATE.digital_turn('right', false)
 				break;
 
@@ -327,6 +367,13 @@ function apply_user_bindings(){
 		}
 	})
 
+}
+
+
+function check_stream(){
+	if( !STATE.move.forward && !STATE.move.back && !STATE.move.left && !STATE.move.right ){
+		STATE.stream_down = false
+	}
 }
 
 

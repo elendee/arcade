@@ -36,7 +36,7 @@ module.exports = {
 				}
 			}
 
-			const TOON = SOCKETS[ arc_id ].request.session.USER.TOON
+			const USER = SOCKETS[ arc_id ].request.session.USER
 
 			switch( packet.type ){
 
@@ -45,43 +45,33 @@ module.exports = {
 					if( SOCKETS[ packet.arc_id ]){
 						SOCKETS[ arc_id ].send(JSON.stringify({
 							type: 'user_pong',
-							user: TOON.publish()
+							user: USER.publish()
 						}))
 					}
 
 					break;
 
 				case 'toon_ping':
-					let zone, toon
-					for( const zone_id of Object.keys( GAME.ZONES )){
-						for( const toon_id of Object.keys( GAME.ZONES[ zone_id ]._TOONS )){
-							log('flag', 'resident toons.. ', toon_id )
-							if( toon_id === packet.arc_id ){
-								zone = GAME.ZONES[ zone_id ]
-							}
+					let user
+					for( const arc_id of Object.keys( GAME._USERS ) ){
+						if( arc_id === packet.arc_id ){
+							user = GAME._USERS[ arc_id ]
 						}
 					}
-					if( zone ){
-						for( const toon_id of Object.keys( zone._TOONS ) ){
-							if( toon_id === packet.arc_id ){
-								toon = zone._TOONS[ toon_id ]
-							}
-						}
-						if( toon ){
-							SOCKETS[ arc_id ].send(JSON.stringify({
-								type: 'toon_pong',
-								toon: toon.publish()
-							}))
-						}
+					if( user ){
+						SOCKETS[ arc_id ].send(JSON.stringify({
+							type: 'toon_pong',
+							user: user.publish()
+						}))
 					}
 					// if( !zone ) log('flag', 'could not find zone', packet )
-					// if( !toon ) log('flag', 'could not find toon', packet )
+					// if( !user ) log('flag', 'could not find user', packet )
 					break;
 
 				case 'dev_ping':
 					SOCKETS[ arc_id ].send( JSON.stringify({
 						type: 'dev_pong',
-						zones: Object.keys( GAME.ZONES )
+						// zones: Object.keys( GAME.ZONES )
 					}))
 					break;
 
@@ -106,24 +96,23 @@ module.exports = {
 
 				case 'move_stream':
 
-					if( TOON ){
+					if( USER ){
 
-						TOON.ref.position = new Vector3(
+						USER.ref.position = new Vector3(
 							packet.ref.position.x,
 							packet.ref.position.y,
 							packet.ref.position.z
 						)
-						TOON.ref.quaternion = new Quaternion(
+						USER.ref.quaternion = new Quaternion(
 							packet.ref.quaternion._x,
 							packet.ref.quaternion._y,
 							packet.ref.quaternion._z,
 							packet.ref.quaternion._w
 						)
 
-						TOON.needs_pulse = true
+						USER._needs_pulse = true
 
 					}
-
 					break;
 
 				case 'chat':
@@ -178,13 +167,15 @@ module.exports = {
 
 		SOCKETS[ arc_id ].on('close', function( data ){
 
-			for( const z_id of Object.keys( GAME.ZONES )){
-				for( const t_id of Object.keys( GAME.ZONES[ z_id ]._TOONS )){
-					if( t_id ===  arc_id ){
-						GAME.ZONES[ z_id ].purge( arc_id )
-					}
-				}
-			}
+			// for( const this_arc_id of Object.keys( GAME._USERS )){
+			// 	if( this_arc_id ===  arc_id ){
+			// 		if( GAME.purge ){
+			// 			GAME.purge( arc_id )
+			// 		}
+			// 		delete GAME._USERS[ arc_id ]
+			// 	}
+			// }
+			if( GAME._USERS[ arc_id ] )  delete GAME._USERS[ arc_id ]
 
 			if( SOCKETS[ arc_id ] )  delete SOCKETS[ arc_id ]
 

@@ -9,7 +9,8 @@ const MAP = require('./MAP.js')
 const Persistent = require('./Persistent.js')
 
 const {
-	Vector3
+	Vector3,
+	Quaternion
 } = require('three')
 
 const uuid = require('uuid').v4
@@ -28,10 +29,13 @@ module.exports = class User extends Persistent {
 
 		this.handle = init.handle
 
+		this.height = init.height || 3
+
 		this.speed = init.speed || 20
 
 		this.ref = {
-			position: new Vector3(),
+			position: new Vector3( MAP.ZONE_WIDTH / 2, this.height / 2, MAP.ZONE_WIDTH / 2 ),
+			quaternion: new Quaternion( 0, 0, 0, 0 )
 		}
 
 	}

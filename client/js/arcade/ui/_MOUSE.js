@@ -6,6 +6,8 @@ import GLOBAL from '../../GLOBAL.js'
 
 import CHAT from './CHAT.js'
 
+import TARGET from './TARGET.js'
+
 import { 
 	Vector3 
 } from '../../lib/three.module.js'
@@ -17,6 +19,10 @@ import RAYCASTER from '../../three/RAYCASTER.js'
 import RENDERER from '../../three/RENDERER.js'
 import SCENE from '../../three/SCENE.js'
 
+import * as ANIMATE from '../animate.js'
+
+import POPUPS from './POPUPS.js'
+
 // import TARGET from './TARGET.js'
 
 // import * as DIALOGUE from '../ui/DIALOGUE.js'
@@ -27,26 +33,37 @@ import SCENE from '../../three/SCENE.js'
 
 const buttons = [ 'left', 'middle', 'right' ]
 
+const clickable_types = ['toon', 'npc', 'self', 'flora', 'structure']
+
 let lastX = -1
 let lastY = -1
 let distX = 0
 let distY = 0
 
-let clearance, toon_offset, new_height
+let clearance, toon_offset, new_height, mousehold
 
-const toPatron = new Vector3()
+const toToon = new Vector3()
 const wheel_projection = new Vector3()
 
-const head_pos = new Vector3()
+// const head_pos = new Vector3()
+let zone
 
+function init( ZONE ){
 
-function init(){
+	zone = ZONE
 
 	RENDERER.domElement.addEventListener('mousedown', click_down )
 	RENDERER.domElement.addEventListener('mouseup', click_up )
 	RENDERER.domElement.addEventListener('contextmenu', click_down )
-	RENDERER.domElement.addEventListener('mousemove', move )
+	RENDERER.domElement.addEventListener('mousemove', mouse_move )
 	RENDERER.domElement.addEventListener('mousewheel', wheel )
+
+	// mousehold = document.createElement('div')
+	// mousehold.id = 'mousehold'
+	// let hold_img = document.createElement('img')
+	// mousehold.appendChild( hold_img )
+
+	// document.body.appendChild( mousehold )
 
 }
 
@@ -57,7 +74,7 @@ function click_down( e ){
 
 	if( STATE.handler == 'chat' )  CHAT.input.blur()
 
-	if( e.button !== 2 )  detect_object_clicked( e )
+	if( e.button !== 2 )  detect_object_clicked( e, zone )
 
 	e.preventDefault()
 
@@ -69,20 +86,26 @@ function click_up( e ){
 
 	if( e.button == 2 )  lastX = lastY = -1
 
+	ANIMATE.analog_turn( false )
+
+	for( const id of Object.keys( POPUPS ) ){
+		POPUPS[ id ].mousedown = false
+	}
+
 }
 
-function move( e ){
+function mouse_move( e ){
 
 	if( STATE.mousedown.right || ( STATE.mousedown.left && STATE.shiftKey )){
+
+		// console.log('no more mouse look')
 		if( lastX == -1 ){
 		}else{
-
 			distX = e.clientX - lastX
 			distY = e.clientY - lastY
-
 		}
 
-		orient_patron( distX, distY )
+		orient_patron( distX, distY, e )
 
 		lastX = e.clientX
 		lastY = e.clientY
@@ -90,12 +113,13 @@ function move( e ){
 
 }
 
-function orient_patron( x, y ){
+function orient_patron( x, y, e ){
 
+	if( e.clientY > window.innerHeight / 2 )  x *= -1
+
+	// ANIMATE.analog_turn( ( x / 100 ), true )
 	window.USER.MODEL.rotation.y -= ( x / 100 )
-
 	adjust_camera_altitude( y )
-
 	window.USER.needs_stream = true
 
 }
@@ -110,7 +134,6 @@ function adjust_camera_altitude( y ){
 
 		if( above_ground ){
 			CAMERA.position.y += ( y / 2 )	
-			center_camera()
 		}
 
 	}else{
@@ -120,7 +143,7 @@ function adjust_camera_altitude( y ){
 
 		if( wheel_projection.distanceTo( GLOBAL.ORIGIN ) < GLOBAL.MAX_CAM ){
 			CAMERA.position.y += ( y / 2 )	
-			center_camera()
+			CAMERA.lookAt( GLOBAL.ORIGIN )
 		}
 
 	}
@@ -129,9 +152,10 @@ function adjust_camera_altitude( y ){
 
 function center_camera(){
 
-	// head_pos.copy( window.USER.MODEL.position ).add( window.USER.position )
+	// head_pos.copy( window.USER.MODEL.position ).add( window.USER.HEAD.position )
 
-	CAMERA.lookAt( USER.MODEL.position )
+	// CAMERA.lookAt( head_pos )
+	// CAMERA.lookAt( window.USER.MODEL.position )
 
 }
 
@@ -140,26 +164,35 @@ function wheel( e ){
 
 	if( STATE.stream_down || STATE.mousedown.left || STATE.mousedown.right || STATE.mousedown.middle )  return false
 
-	toPatron.subVectors( GLOBAL.ORIGIN, CAMERA.position ).normalize().multiplyScalar( 2.5 )
+	toToon.subVectors( GLOBAL.ORIGIN, CAMERA.offset ).normalize().multiplyScalar( 5.5 )
 
-	if( e.wheelDelta < 0 ) toPatron.multiplyScalar( -1 )
+	if( e.wheelDelta < 0 ) toToon.multiplyScalar( -1 )
 
-	wheel_projection.copy( CAMERA.position ).add( toPatron )
+	wheel_projection.copy( CAMERA.offset ).add( toToon )
 
 	if( e.wheelDelta > 0 ){
+
 		let dist = wheel_projection.distanceTo( GLOBAL.ORIGIN )
-		if( dist > GLOBAL.MIN_CAM + 5){
-			CAMERA.position.add( toPatron )
+		if( dist > GLOBAL.MIN_CAM + 5 ){
+			CAMERA.offset.add( toToon )
 		}
+
 	}else{
-		if( wheel_projection.distanceTo( GLOBAL.ORIGIN ) < GLOBAL.MAX_CAM && wheel_projection.y > 0 - ( window.USER.height / 2 ) ){
-			CAMERA.position.add( toPatron )
+
+		let dist1 = wheel_projection.distanceTo( GLOBAL.ORIGIN )
+		let dist2 = GLOBAL.MAX_CAM
+
+		if( dist1 < dist2 && wheel_projection.y > 0 - ( window.USER.height / 2 ) ){
+			CAMERA.offset.add( toToon )
 		}else{
-			console.log('scroll back problem... ', wheel_projection )
+			// console.log('scroll back block' ) // , wheel_projection
 		}
+
 	}
 
-	center_camera()
+	CAMERA.position.copy( window.USER.MODEL.position ).add( CAMERA.offset )
+
+	RENDERER.frame( SCENE )
 
 }
 
@@ -173,7 +206,7 @@ function wheel( e ){
 
 
 
-function detect_object_clicked( e ){
+function detect_object_clicked( e, ZONE ){
 
 	e.preventDefault();
 
@@ -189,71 +222,37 @@ function detect_object_clicked( e ){
 
 	if( intersects.length > 0 ) { // 1 = skybox
 
-		// console.log()
-
-		console.log('clicked: ' , intersects[0] )
-
 		let clicked = false
 		for( const int of intersects ){
 			clicked = recurse_for( 'clickable', int.object )
 			if( clicked ) break
 		}
 
+		// console.log('intersects length: ', intersects.length )
+
 		if( clicked ){
 
-			hal('standard', clicked.userData.name, 3000 )
+			// console.log('what????', clicked.userData )
 
-		// 	// TARGET.set( clicked )
-		// 	console.log( 'clicked: ', clicked.userData.type, clicked.userData.dpkt_id, clicked )
+			if( !check_distance( clicked, intersects ) ){
+				hal('error', 'too far', 2000 )
+				return false
+			}
 
-		// 	if( !check_distance( clicked, intersects ) ){
-		// 		hal('error', 'too far', 2000 )
-		// 		return false
-		// 	}
+			if( clickable_types.includes( clicked.userData.type )){
 
-		// 	if( clicked.userData.type === 'image' ){
+				TARGET.set( clicked, ZONE )
 
-		// 		DIALOGUE.render_image_info( clicked )
-		// 		DIALOGUE.render_reticule( clicked )
+			}else{
 
-		// 	}else if( clicked.userData.type === 'npc' ){
-
-		// 		if( clicked.userData.popup ){
-		// 			POPUP.show( clicked.userData.popup )
-		// 			DIALOGUE.render_reticule( clicked )
-		// 		}
-
-		// 		NPCS[ clicked.userData.dpkt_id ].greet()
-
-		// 	}else if( clicked.userData.type == 'self'){
-
-		// 		POPUP.show('self')
-
-		// 	}else if( clicked.userData.type == 'toon' ){
-
-		// 		DIALOGUE.render_toon( clicked.userData )
-		// 		POPUP.show('toon-profile')
-
-		// 	}else if( clicked.userData.type === 'pillar' ){
-
-		// 		console.log( clicked.userData )
-
-		// 	}else if( clicked.userData.type == 'open' ){
-
-		// 		POPUP.show('upload')
-		// 		DIALOGUE.render_reticule( clicked )
-
-		// 	}else if( clicked.userData.type == 'tree' ){
-
-
-
-		// 		window.TREE = clicked
+				console.log('unknown click type: ', clicked.userData.type )
 
 			}
 
-		// }else{
-		// 	DIALOGUE.close_all()
-		// }
+		}else{
+
+			// DIALOGUE.close_all()
+		}
 
 	}else{
 		// DIALOGUE.close_all()
@@ -265,52 +264,38 @@ function detect_object_clicked( e ){
 
 
 
-// function check_distance( clicked, intersects ){
+function check_distance( clicked, intersects ){
 
-// 	let dist, clicked_position, required_dist
-// 	let type = clicked.userData.type
+	let dist, clicked_position, required_dist
+	let type = clicked.userData.type
 
-// 	if( type == 'pillar' ){
+	if( type == 'flora' ){
 
-// 		return true
+		return true
 
-// 	}else if( type == 'image' || type == 'open' ){
+	}else if( type == 'npc' || type == 'toon' ){
 
-// 		let pillar = recurse_for('pillar', intersects[0].object )
-// 		if( !pillar ){
-// 			console.log( 'could not find pillar for image')
-// 			return false
-// 		}
+		clicked_position = new Vector3().copy( clicked.position )
+		required_dist = MAP.TARGET_DIST * 2
 
-// 		clicked_position = new Vector3().copy( pillar.position )
+	}else if( type == 'self' ){
 
-// 		if( type == 'image' || type == 'open' )  clicked_position.add( clicked.position )
+		return true
 
-// 		required_dist = MAP.TARGET_DIST
+	}else{
 
-// 	}else if( type == 'npc' || type == 'toon' || type == 'tree' ){
-
-// 		clicked_position = new Vector3().copy( clicked.position )
-// 		required_dist = MAP.TARGET_DIST * 2
-
-// 	}else if( type == 'self' ){
-
-// 		return true
-
-// 	}else{
-
-// 		console.log('unhandled click type: ', type )
-// 		return false
+		console.log('unhandled click type: ', type )
+		return false
 		
-// 	}
+	}
 
-// 	dist = clicked_position.distanceTo( window.USER.MODEL.position )
+	dist = clicked_position.distanceTo( window.USER.MODEL.position )
 
-// 	if( dist < required_dist )  return true
+	if( dist < required_dist )  return true
 
-// 	return false
+	return false
 
-// }
+}
 
 
 
@@ -372,7 +357,7 @@ function recurse_for( type, search ){
 
 function check_clickable( obj ){
 	if( obj && obj.userData && obj.userData.clickable ){
-		// if( DIALOGUE.TARGET.entity && DIALOGUE.TARGET.entity.dpkt_id === obj.dpkt_id ) return false
+		// if( DIALOGUE.TARGET.entity && DIALOGUE.TARGET.entity.arc_id === obj.arc_id ) return false
 		return obj
 	}else{
 		return false
@@ -414,6 +399,7 @@ export {
 	click_down,
 	click_up,
 	detect_object_clicked,
-	// recurse_for,
+	recurse_for,
 	check_clickable,
+	mousehold
 }

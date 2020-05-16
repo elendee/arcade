@@ -401,7 +401,7 @@ DB.initPool(( err, pool ) => {
 
 			}else{
 
-				log('flag', 'WUNDERBAR, OPENING ARCADE')
+				log('arcade', 'WUNDERBAR, OPENING ARCADE')
 
 				GAME.opening = true
 

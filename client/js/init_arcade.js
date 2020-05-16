@@ -13,6 +13,8 @@ import ARCADE from './arcade/ARCADE.js'
 
 import RENDERER from './three/RENDERER.js'
 
+import STATE from './arcade/STATE.js'
+
 import User from './User.js'
 
 // import Toon from './arcade/Toon.js'

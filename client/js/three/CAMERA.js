@@ -12,7 +12,7 @@ export default (function(){
 
 	camera = new PerspectiveCamera( 30, window.innerWidth / window.innerHeight, 1, GLOBAL.VIEW )
 
-	camera.offset = new Vector3( 0, GLOBAL.MAX_CAM * .75, 20)
+	camera.offset = new Vector3( 0, GLOBAL.MIN_CAM + 20, GLOBAL.MIN_CAM + 20)
 
 	// camera.position.set( 0, 300, -40 );
 

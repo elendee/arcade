@@ -9,7 +9,7 @@ import CAMERA from '../../three/CAMERA.js'
 import GLOBAL from '../../GLOBAL.js'
 
 import TOONS from '../TOONS.js'
-import NPCS from '../NPCS.js'
+// import NPCS from '../NPCS.js'
 
 import {
 	Vector3
@@ -73,15 +73,15 @@ class Chat {
 			return false
 		}
 
-		if( !NPCS[ obj.sender_arc_id ] && !TOONS[ obj.sender_arc_id ] && window.TOON.arc_id !== obj.sender_arc_id ){
-			console.log('no toon found for chat ', obj.sender_arc_id )
-			return false
-		}
+		// if( !NPCS[ obj.sender_arc_id ] && !TOONS[ obj.sender_arc_id ] && window.USER.arc_id !== obj.sender_arc_id ){
+		// 	console.log('no toon found for chat ', obj.sender_arc_id )
+		// 	return false
+		// }
 
 		const chat = document.createElement('div')
 		chat.classList.add('chat')
 		chat.classList.add( obj.method )
-		if( obj.sender_arc_id == window.TOON.arc_id ) chat.classList.add('self')
+		if( obj.sender_arc_id == window.USER.arc_id ) chat.classList.add('self')
 		chat.innerHTML = `<span class="speaker" style="color: ${ obj.color }">${ obj.speaker }: </span>${ obj.chat }`
 
 		this.content.appendChild( chat )
@@ -94,7 +94,7 @@ class Chat {
 			chats[ 0 ].remove()
 		}
 
-		// if( !TOONS[ obj.sender_arc_id ] && window.TOON.arc_id !== obj.sender_arc_id ){
+		// if( !TOONS[ obj.sender_arc_id ] && window.USER.arc_id !== obj.sender_arc_id ){
 		// 	console.log('speaker not found for chat')
 		// 	return false
 		// }
@@ -212,12 +212,12 @@ class Bubble {
 	update_position(){
 
 		let vector
-		if( this.sender_arc_id == window.TOON.arc_id ){
-			vector = new Vector3().copy( window.TOON.MODEL.position )
+		if( this.sender_arc_id == window.USER.arc_id ){
+			vector = new Vector3().copy( window.USER.MODEL.position )
 		}else if( TOONS[ this.sender_arc_id ] && TOONS[ this.sender_arc_id ].MODEL ){
 			vector = new Vector3().copy( TOONS[ this.sender_arc_id ].MODEL.position )
-		}else if( NPCS[ this.sender_arc_id ] && NPCS[ this.sender_arc_id ].MODEL ){
-			vector = new Vector3().copy( NPCS[ this.sender_arc_id ].MODEL.position )
+		// }else if( NPCS[ this.sender_arc_id ] && NPCS[ this.sender_arc_id ].MODEL ){
+		// 	vector = new Vector3().copy( NPCS[ this.sender_arc_id ].MODEL.position )
 		}else{
 			console.log('no model found for chat ', this.sender_arc_id )
 			return false

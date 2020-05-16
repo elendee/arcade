@@ -26,6 +26,8 @@ class Game {
 
 		this.pulse = false
 
+		this.move_pulse = false
+
 		this._USERS = init._USERS || {}
 
 	}
@@ -54,6 +56,22 @@ class Game {
 
 		}, GLOBAL.PULSES.GAME )
 
+		game.move_pulse = setInterval(function(){
+			let packet = {}
+			for( const arc_id of Object.keys( game._USERS) ){
+				packet[ arc_id ] = {
+					position: game._USERS[ arc_id ].ref.position,
+					quaternion: game._USERS[ arc_id ].ref.quaternion,
+				}
+			}
+			for( const arc_id of Object.keys( SOCKETS )){
+				SOCKETS[ arc_id ].send(JSON.stringify({
+					type: 'move_pulse',
+					packet: packet 
+				}))
+			}
+		}, 1000)
+
 
 	}
 
@@ -62,7 +80,7 @@ class Game {
 
 	async init_user( socket ){
 
-		const pool = DB.getPool()
+		// const pool = DB.getPool()
 
 		let USER, x, z 
 
@@ -71,6 +89,8 @@ class Game {
 		SOCKETS[ USER.arc_id ] = socket
 
 		this._USERS[ USER.arc_id ] = USER
+
+		ROUTER.bind_user( this, USER.arc_id )
 
 		SOCKETS[ USER.arc_id ].send( JSON.stringify( {
 			type: 'session_init',
@@ -256,13 +276,14 @@ class Game {
 		}
 
 		for( const socket_arc_id of Object.keys( SOCKETS )){
+
 			let chat_pack = {
 				type: 'chat',
 				method: packet.method,
 				sender_arc_id: arc_id,
-				speaker: SOCKETS[ arc_id ].request.session.USER.TOON.name,
+				speaker: SOCKETS[ arc_id ].request.session.USER.name,
 				chat: lib.sanitize_chat( packet.chat ),
-				color: SOCKETS[ arc_id ].request.session.USER.TOON.color
+				color: SOCKETS[ arc_id ].request.session.USER.color
 			}
 			log('chat', chat_pack.speaker, chat_pack.chat )
 			SOCKETS[ socket_arc_id ].send(JSON.stringify( chat_pack ))

@@ -12,6 +12,8 @@ import CHAT from './ui/CHAT.js'
 
 import MAP from '../MAP.js'
 
+// import STAT
+
 const bind = function(){
 
 	return new Promise(function( resolve, reject ){
@@ -59,23 +61,23 @@ const bind = function(){
 					break;
 
 				case 'move_pulse':
-					ZONE.handle_move( obj.packet )
+					ARCADE.handle_move( obj.packet )
 					break;
 
 				// case 'census':
-				// 	ZONE.census( obj.crowd )
+				// 	ARCADE.census( obj.crowd )
 				// 	break;
 
-				case 'profile_pong':
-					ZONE.touch_patron( obj.patron )
-					break;
+				// case 'profile_pong':
+				// 	ARCADE.touch_patron( obj.patron )
+				// 	break;
 
 				// case 'floorplan_pong':
-				// 	ZONE.layout( obj.floorplan )
+				// 	ARCADE.layout( obj.floorplan )
 				// 	break;
 
 				case 'toon_pong':
-					ZONE.touch_toon( obj )
+					ARCADE.touch_toon( obj )
 					break;
 
 				case 'dev_pong':
@@ -83,12 +85,12 @@ const bind = function(){
 					break;
 
 				// case 'forest_pong':
-				// 	ZONE.walk_forest( obj.forest )
+				// 	ARCADE.walk_forest( obj.forest )
 				// 	break;
 
 				// case 'pillars':
 				// 	if( obj.pillars ){
-				// 		ZONE.install( obj.pillars, false )
+				// 		ARCADE.install( obj.pillars, false )
 				// 	}else{
 				// 		setTimeout(function(){
 				// 			SOCKET.send( JSON.stringify({ 
@@ -108,7 +110,7 @@ const bind = function(){
 						// if( obj.patron.arc_id === window.TOON.arc_id ){
 						// 	hal('success', 'welcome back!', 3000)
 						// }
-						ZONE.touch_patron( obj.patron )
+						ARCADE.touch_patron( obj.patron )
 					// }
 					break;
 
@@ -126,38 +128,38 @@ const bind = function(){
 					if( obj.patron.arc_id === window.TOON.arc_id ){
 						hal('success', 'artist created', 4000)
 					}
-					ZONE.touch_patron( obj.patron )
+					ARCADE.touch_patron( obj.patron )
 					// }
 					break;
 
 				case 'profile':
 					// console.error('finish switching update to http .... ')
 					// if( obj.msg == 'success' ){
-					ZONE.update_toon( obj )
+					ARCADE.update_toon( obj )
 					// }else{
 					// 	console.log('error changing profile: ', obj )
 					// }
 					break;
 
 				case 'new_img':
-					ZONE.new_img( obj )
+					ARCADE.new_img( obj )
 					break;
 
 				// case 'bot_begin_path':
-				// 	ZONE.handle_bot( obj )
+				// 	ARCADE.handle_bot( obj )
 				// 	break;
 
 				// case 'bot_walk':
-				// 	ZONE.handle_bot( obj )
+				// 	ARCADE.handle_bot( obj )
 				// 	break;
 
 				// case 'bot_pulse':
 				// 	console.log('bot pulse should be deprecated...')
-				// 	ZONE.handle_bot( obj )
+				// 	ARCADE.handle_bot( obj )
 				// 	break;
 
 				// case 'bot_thought':
-				// 	ZONE.handle_bot( obj )
+				// 	ARCADE.handle_bot( obj )
 				// 	break;
 
 				// case 'zoom':
@@ -165,12 +167,12 @@ const bind = function(){
 				// 	break;
 
 				// case 'pulse_pillar_key':
-				// 	ZONE.check_pillar_keys( obj.keys )
+				// 	ARCADE.check_pillar_keys( obj.keys )
 				// 	break;
 
 				// case 'pillar_ping_single':
 				// 	console.log('single...')
-				// 	// ZONE.install( obj.pillar, true )
+				// 	// ARCADE.install( obj.pillar, true )
 				// 	break;
 
 				case 'error':
