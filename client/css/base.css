@@ -4,6 +4,10 @@ body{
     color: grey;
 /*     font-family: Courier */
     font-family: monospace;
+}
+
+input{
+    font-family: monospace;
     letter-spacing: 1px;
 }
 
