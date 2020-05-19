@@ -246,7 +246,7 @@ class Arcade {
 				}
 			})
 
-			for( let i = 0; i < 200; i++ ){
+			for( let i = 0; i < 1500; i++ ){
 
 				add_machine({
 					machine: group.clone(),
@@ -254,8 +254,8 @@ class Arcade {
 					name: 'GAME_' + Math.random() * 100 / 100 * 100,
 					center: arcadegroup.position,
 					offset: {
-						x: ( i % 10 ) * 10,
-						z: Math.floor( i / 10 ) * 10
+						x: ( i % 40 ) * 10,
+						z: Math.floor( i / 40 ) * 10
 					}
 				})
 
@@ -488,6 +488,7 @@ function add_machine( data ){
 	machine.userData.type = 'machine'
 
 	machine.children[0].castShadow = true
+	machine.children[0].receiveShadow = true
 
 	bbox.setFromObject( machine )
 
