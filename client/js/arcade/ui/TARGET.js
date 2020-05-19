@@ -98,19 +98,21 @@ class Target {
 
 			if( this.target && clicked.userData.arc_id !== this.target.arc_id )  this.clear()
 
-			if( userData.type === 'flora' && ZONE.FLORA[ userData.arc_id ] ) {
+			// if( userData.type === 'flora' && ZONE.FLORA[ userData.arc_id ] ) {
 
-				this.target = ZONE.FLORA[ userData.arc_id ]
+			// 	this.target = ZONE.FLORA[ userData.arc_id ]
 
-			}else if( userData.type === 'self' ){
+			// }else if( userData.type === 'self' ){
 
-				this.target = window.TOON
+			// 	this.target = window.TOON
 
-			}else if( userData.type === 'npc' && ZONE.NPCS[ userData.arc_id ]){
+			// }else if( userData.type === 'npc' && ZONE.NPCS[ userData.arc_id ]){
 
-				this.target = ZONE.NPCS[ userData.arc_id ]
+			// 	this.target = ZONE.NPCS[ userData.arc_id ]
 
-			}
+			// }
+
+			this.target = clicked
 
 			this.profile_img.src = '/resource/images/profiles/' + GLOBAL.PROFILE_IMGS[ userData.type ] || 'unknown.png'
 

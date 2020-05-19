@@ -24,6 +24,8 @@ import animate from './animate.js'
 // import * as ANIMATE from './animate.js'
 
 
+
+
 import {
 	Vector3,
 	Quaternion,
@@ -36,8 +38,11 @@ import {
 	Object3D,
 	NearestFilter,
 	sRGBEncoding,
-	Group
+	Group,
+	Box3
 } from '../lib/three.module.js'
+
+
 
 
 import texLoader from '../three/texLoader.js'
@@ -53,6 +58,8 @@ if( env.EXPOSE ){
 let new_pos, new_quat, old_pos, old_quat, needs_move, needs_rotate
 
 const ground_mat = texLoader.load('/resources/textures/concrete.jpg')
+
+const bbox = new Box3()
 
 
 class Arcade {
@@ -136,6 +143,8 @@ class Arcade {
 
 	render( arcade_data ){
 
+		const arcade = this
+
 		// tiles
 
 		const geometry = new PlaneBufferGeometry( MAP.ZONE_WIDTH, MAP.ZONE_WIDTH, 32 )
@@ -165,23 +174,99 @@ class Arcade {
 		machinetex.minFilter = NearestFilter
 		machinetex.encoding = sRGBEncoding
 
-		// load model
-		lib.load('buffer_geometry', '/resources/geometries/arcade.json' )
-		.then( geometry =>{
-			const material = new MeshBasicMaterial({ 
-				map: machinetex,
-				transparent: true
-			})
-			const object = new Mesh( geometry, material )
-			object.userData.clickable = true
-			object.userData.name = 'GAME_' + lib.random_hex(5)
+		const machine_material = new MeshBasicMaterial({ 
+			map: machinetex,
+			transparent: true
+		})
 
-			object.rotation.y = Math.PI
-			// object.receiveShadow = true
-			object.castShadow = true
-			object.scale.set ( 2, 2, 2 )
-			arcadegroup.add( object )
-		}).catch( err=> { console.log('load err: ', ) } )
+
+
+		// load model
+		lib.load('obj', '/resources/geometries/arcade1.obj' )
+		.then( group =>{
+
+			add_machine({
+				machine: group, 
+				material: machine_material, 
+				name: 'SPACEBALLS', 
+				center: arcadegroup.position,
+				offset: {
+					x: -10,
+					z: -10
+				}
+			})
+
+		}).catch( err=> { console.log('load err: ', err) } )
+
+		lib.load('obj', '/resources/geometries/arcade2.obj' )
+		.then( group =>{
+
+			add_machine({
+				machine: group,
+				material: new MeshLambertMaterial({
+					color: 'rgb(30, 35, 25)'
+				}),
+				name: 'COWBOP BEBOY',
+				center: arcadegroup.position,
+				offset: {
+					x: -10,
+					z: 10
+				}
+			})
+
+		}).catch( err=> { console.log('load err: ', err) } )
+
+		lib.load('obj', '/resources/geometries/arcade3.obj' )
+		.then( group =>{
+
+			add_machine({
+				machine: group,
+				material: machine_material,
+				name: 'KING ARTURO',
+				center: arcadegroup.position,
+				offset: {
+					x: 10,
+					z: -10
+				}
+			})
+
+		}).catch( err=> { console.log('load err: ', err) } )
+
+		lib.load('obj', '/resources/geometries/arcade4.obj' )
+		.then( group =>{
+
+			add_machine({
+				machine: group,
+				material: machine_material,
+				name: 'WALK INTO MORDOR',
+				center: arcadegroup.position,
+				offset: {
+					x: 10,
+					z: 10
+				}
+			})
+
+			for( let i = 0; i < 200; i++ ){
+
+				add_machine({
+					machine: group.clone(),
+					material: machine_material,
+					name: 'GAME_' + Math.random() * 100 / 100 * 100,
+					center: arcadegroup.position,
+					offset: {
+						x: ( i % 10 ) * 10,
+						z: Math.floor( i / 10 ) * 10
+					}
+				})
+
+			}
+
+		}).catch( err=> { console.log('load err: ', err) } )
+
+
+
+
+
 
 		// SKYBOX.position.set( MAP.ZONE_WIDTH / 2, 0, MAP.ZONE_WIDTH / 2)
 		// window.SKYBOX = SKYBOX 
@@ -387,6 +472,33 @@ class Arcade {
 
 	}
 
+}
+
+
+
+
+function add_machine( data ){
+
+	let machine = data.machine
+
+	machine.children[0].material = data.material
+
+	machine.userData.clickable = true
+	machine.userData.name = data.name
+	machine.userData.type = 'machine'
+
+	machine.children[0].castShadow = true
+
+	bbox.setFromObject( machine )
+
+	machine.position.set( 
+		data.center.x - data.offset.x,
+		( bbox.max.y - bbox.min.y )/ 2,
+		data.center.z - data.offset.z
+	)
+
+
+	SCENE.add( machine )
 
 }
 

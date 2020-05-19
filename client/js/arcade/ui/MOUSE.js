@@ -201,7 +201,10 @@ function detect_object_clicked( e ){
 
 		if( clicked ){
 
-			hal('standard', clicked.userData.name, 3000 )
+			if( clicked.userData.type === 'machine' ){
+				hal('machine', clicked.userData.name, 5000 )
+			}
+
 
 		// 	// TARGET.set( clicked )
 		// 	console.log( 'clicked: ', clicked.userData.type, clicked.userData.dpkt_id, clicked )

@@ -5,9 +5,10 @@ import {
 
 } from './lib/three.module.js'
 
-import GLTF from './three/GLTF.js'
-import BuffGeoLoader from './three/BuffGeoLoader.js'
-import ObjectLoader from './three/ObjectLoader.js'
+import GLTF from './three/loader_GLTF.js'
+import BuffGeoLoader from './three/loader_BuffGeo.js'
+import ObjectLoader from './three/loader_Object.js'
+import OBJLoader from './three/loader_OBJ.js'
 
 
 
@@ -73,6 +74,18 @@ function load( type, filepath ){
 
 			case 'json':
 				ObjectLoader.load( filepath, 
+				( obj ) => {
+					resolve( obj )
+				}, (xhr) => {
+					// console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' )
+				}, ( error ) => {
+					console.log('error loading model: ', error, filepath )
+					reject( 'model not found' )
+				})
+				break;
+
+			case 'obj':
+				OBJLoader.load( filepath, 
 				( obj ) => {
 					resolve( obj )
 				}, (xhr) => {
